@@ -1,7 +1,8 @@
 # SimpleAuthorize
 
-[![Gem Version](https://badge.fury.io/rb/simple_authorize.svg)](https://badge.fury.io/rb/simple_authorize)
+[![Gem Version](https://img.shields.io/gem/v/simple_authorize.svg)](https://rubygems.org/gems/simple_authorize)
 [![Ruby](https://github.com/scottlaplant/simple_authorize/workflows/Ruby/badge.svg)](https://github.com/scottlaplant/simple_authorize/actions)
+[![Downloads](https://img.shields.io/gem/dt/simple_authorize.svg)](https://rubygems.org/gems/simple_authorize)
 
 SimpleAuthorize is a lightweight, powerful authorization framework for Rails that provides policy-based access control without external dependencies. Inspired by Pundit, it offers a clean API for managing permissions in your Rails applications.
 
