@@ -6,11 +6,11 @@ require_relative "simple_authorize/configuration"
 require_relative "simple_authorize/controller"
 require_relative "simple_authorize/policy"
 
+# SimpleAuthorize provides a lightweight authorization framework for Rails applications
+# without external dependencies. It offers policy-based access control inspired by Pundit.
 module SimpleAuthorize
   class Error < StandardError; end
 end
 
 # Only load Railtie if Rails is defined
-if defined?(Rails::Railtie)
-  require_relative "simple_authorize/railtie"
-end
+require_relative "simple_authorize/railtie" if defined?(Rails::Railtie)

@@ -13,7 +13,7 @@ module SimpleAuthorize
       def initialize(options = {})
         if options.is_a?(String)
           # Handle plain string message
-          super(options)
+          super
         else
           # Handle hash options
           @query = options[:query]
@@ -54,9 +54,7 @@ module SimpleAuthorize
       query ||= "#{action_name}?"
       @_policy = policy(record, policy_class: policy_class)
 
-      unless @_policy.public_send(query)
-        raise NotAuthorizedError.new(query: query, record: record, policy: @_policy)
-      end
+      raise NotAuthorizedError.new(query: query, record: record, policy: @_policy) unless @_policy.public_send(query)
 
       @authorization_performed = true
       record
@@ -70,10 +68,10 @@ module SimpleAuthorize
     # Get or instantiate policy for a record
     def policy(record, policy_class: nil, namespace: nil)
       policy_class ||= if namespace
-        policy_class_for(record, namespace: namespace)
-      else
-        policy_class_for(record)
-      end
+                         policy_class_for(record, namespace: namespace)
+                       else
+                         policy_class_for(record)
+                       end
       policy_class.new(authorized_user, record)
     rescue NameError
       raise PolicyNotDefinedError, "unable to find policy `#{policy_class}` for `#{record}`"
@@ -123,12 +121,14 @@ module SimpleAuthorize
     # Verify that authorization was performed
     def verify_authorized
       return if authorization_performed?
+
       raise AuthorizationNotPerformedError, "#{self.class}##{action_name} is missing authorization"
     end
 
     # Verify that scoping was performed for index actions
     def verify_policy_scoped
       return if policy_scoped?
+
       raise PolicyScopingNotPerformedError, "#{self.class}##{action_name} is missing policy scope"
     end
 
@@ -169,9 +169,7 @@ module SimpleAuthorize
       query ||= "#{action_name}?"
       policy = policy_class.new(authorized_user, nil)
 
-      unless policy.public_send(query)
-        raise NotAuthorizedError.new(query: query, record: policy_class, policy: policy)
-      end
+      raise NotAuthorizedError.new(query: query, record: policy_class, policy: policy) unless policy.public_send(query)
 
       @authorization_performed = true
       true
@@ -220,30 +218,28 @@ module SimpleAuthorize
     def policy_class_for(record, namespace: nil)
       klass = record.class
       record_class = if record.is_a?(Class)
-        record.name
-      elsif record.respond_to?(:model_name)
-        record.model_name.to_s
-      elsif klass.respond_to?(:model_name)
-        klass.model_name.to_s
-      else
-        klass.name
-      end
+                       record.name
+                     elsif record.respond_to?(:model_name)
+                       record.model_name.to_s
+                     elsif klass.respond_to?(:model_name)
+                       klass.model_name.to_s
+                     else
+                       klass.name
+                     end
 
       policy_class_name = if namespace
-        "#{namespace.to_s.camelize}::#{record_class}Policy"
-      else
-        "#{record_class}Policy"
-      end
+                            "#{namespace.to_s.camelize}::#{record_class}Policy"
+                          else
+                            "#{record_class}Policy"
+                          end
 
       begin
         policy_class_name.constantize
       rescue NameError
         # Fall back to non-namespaced policy if namespaced one doesn't exist
-        if namespace
-          "#{record_class}Policy".constantize
-        else
-          raise
-        end
+        raise unless namespace
+
+        "#{record_class}Policy".constantize
       end
     end
 
@@ -278,11 +274,7 @@ module SimpleAuthorize
       request_uri = URI.parse(request.url)
 
       # Only allow referrers from the same host
-      if referrer_uri.host == request_uri.host
-        referrer_uri.path
-      else
-        nil
-      end
+      referrer_uri.path if referrer_uri.host == request_uri.host
     rescue URI::InvalidURIError
       nil
     end

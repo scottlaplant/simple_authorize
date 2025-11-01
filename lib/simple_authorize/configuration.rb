@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module SimpleAuthorize
+  # Configuration options for SimpleAuthorize
   class Configuration
     # Default error message shown to users when not authorized
     attr_accessor :default_error_message

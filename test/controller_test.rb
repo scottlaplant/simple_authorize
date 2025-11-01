@@ -106,9 +106,9 @@ class ControllerTest < ActiveSupport::TestCase
         posts.select(&block)
       end
     end.new([
-      Post.new(id: 1, published: true),
-      Post.new(id: 2, published: false)
-    ])
+              Post.new(id: 1, published: true),
+              Post.new(id: 2, published: false)
+            ])
 
     @controller.current_user = @viewer
     scoped = @controller.policy_scope(posts_relation)
@@ -121,13 +121,13 @@ class ControllerTest < ActiveSupport::TestCase
   # Test permitted_attributes
   test "permitted_attributes returns policy attributes" do
     attrs = @controller.permitted_attributes(@post)
-    assert_equal [:title, :body, :published], attrs
+    assert_equal %i[title body published], attrs
   end
 
   test "permitted_attributes for non-admin" do
     @controller.current_user = @viewer
     attrs = @controller.permitted_attributes(@post)
-    assert_equal [:title, :body], attrs
+    assert_equal %i[title body], attrs
   end
 
   # Test verification
@@ -282,14 +282,12 @@ class ControllerTest < ActiveSupport::TestCase
 
   # Test NotAuthorizedError structure
   test "NotAuthorizedError stores query, record, and policy" do
-    begin
-      @controller.current_user = @viewer
-      @controller.authorize(@post, :update?)
-    rescue SimpleAuthorize::Controller::NotAuthorizedError => e
-      assert_equal :update?, e.query
-      assert_equal @post, e.record
-      assert_instance_of PostPolicy, e.policy
-    end
+    @controller.current_user = @viewer
+    @controller.authorize(@post, :update?)
+  rescue SimpleAuthorize::Controller::NotAuthorizedError => e
+    assert_equal :update?, e.query
+    assert_equal @post, e.record
+    assert_instance_of PostPolicy, e.policy
   end
 
   test "NotAuthorizedError accepts string message" do

@@ -1,8 +1,55 @@
 AllCops:
-  TargetRubyVersion: 3.2
+  TargetRubyVersion: 3.0
+  NewCops: enable
+  SuggestExtensions: false
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
 Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
+
+# Disable metrics for test files - tests can be long
+Metrics/ClassLength:
+  Exclude:
+    - 'test/**/*'
+
+Metrics/MethodLength:
+  Exclude:
+    - 'test/**/*'
+    - 'lib/simple_authorize/controller.rb'
+
+Metrics/BlockLength:
+  Exclude:
+    - 'test/**/*'
+    - '**/*.gemspec'
+
+# Controller module is legitimately large due to comprehensive authorization methods
+Metrics/ModuleLength:
+  Exclude:
+    - 'lib/simple_authorize/controller.rb'
+
+# The policy_class_for method is complex but necessary for flexible policy resolution
+Metrics/AbcSize:
+  Exclude:
+    - 'lib/simple_authorize/controller.rb'
+
+Metrics/PerceivedComplexity:
+  Exclude:
+    - 'lib/simple_authorize/controller.rb'
+
+# Development dependencies are fine in gemspec
+Gemspec/DevelopmentDependencies:
+  Enabled: false
+
+# authorize_headless doesn't return boolean, so doesn't need ?
+Naming/PredicateMethod:
+  Exclude:
+    - 'lib/simple_authorize/controller.rb'
+
+# Module documented in main lib/simple_authorize.rb file
+# Test files don't need class documentation
+Style/Documentation:
+  Exclude:
+    - 'lib/simple_authorize/configuration.rb'
+    - 'test/**/*'

@@ -9,7 +9,9 @@ Gem::Specification.new do |spec|
   spec.email = ["scottlaplant@users.noreply.github.com"]
 
   spec.summary = "Simple, powerful authorization for Rails without external dependencies"
-  spec.description = "SimpleAuthorize is a lightweight authorization framework for Rails that provides policy-based access control, role management, and scope filtering without requiring external gems. Inspired by Pundit but completely standalone."
+  spec.description = "SimpleAuthorize is a lightweight authorization framework for Rails that provides " \
+                     "policy-based access control, role management, and scope filtering without requiring " \
+                     "external gems. Inspired by Pundit but completely standalone."
   spec.homepage = "https://github.com/scottlaplant/simple_authorize"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0.0"
@@ -18,6 +20,7 @@ Gem::Specification.new do |spec|
   spec.metadata["source_code_uri"] = "https://github.com/scottlaplant/simple_authorize"
   spec.metadata["changelog_uri"] = "https://github.com/scottlaplant/simple_authorize/blob/main/CHANGELOG.md"
   spec.metadata["bug_tracker_uri"] = "https://github.com/scottlaplant/simple_authorize/issues"
+  spec.metadata["rubygems_mfa_required"] = "true"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.

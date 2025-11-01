@@ -80,9 +80,9 @@ class PostPolicy < SimpleAuthorize::Policy
 
   def permitted_attributes
     if user&.admin?
-      [:title, :body, :published]
+      %i[title body published]
     else
-      [:title, :body]
+      %i[title body]
     end
   end
 

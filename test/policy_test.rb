@@ -136,12 +136,12 @@ class PolicyTest < ActiveSupport::TestCase
   # Test permitted attributes
   test "permitted_attributes returns all attributes for admin" do
     policy = PostPolicy.new(@admin, @post)
-    assert_equal [:title, :body, :published], policy.permitted_attributes
+    assert_equal %i[title body published], policy.permitted_attributes
   end
 
   test "permitted_attributes returns limited attributes for non-admin" do
     policy = PostPolicy.new(@contributor, @post)
-    assert_equal [:title, :body], policy.permitted_attributes
+    assert_equal %i[title body], policy.permitted_attributes
   end
 
   # Test new? and edit? aliases
