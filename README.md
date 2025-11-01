@@ -1,19 +1,20 @@
 # SimpleAuthorize
 
-[![Gem Version](https://badge.fury.io/rb/simple_authorize.svg)](https://badge.fury.io/rb/simple_authorize)
+[![Gem Version](https://img.shields.io/gem/v/simple_authorize.svg)](https://rubygems.org/gems/simple_authorize)
 [![Ruby](https://github.com/scottlaplant/simple_authorize/workflows/Ruby/badge.svg)](https://github.com/scottlaplant/simple_authorize/actions)
+[![Downloads](https://img.shields.io/gem/dt/simple_authorize.svg)](https://rubygems.org/gems/simple_authorize)
 
 SimpleAuthorize is a lightweight, powerful authorization framework for Rails that provides policy-based access control without external dependencies. Inspired by Pundit, it offers a clean API for managing permissions in your Rails applications.
 
 ## Features
 
-- 🔒 **Policy-Based Authorization** - Define authorization rules in dedicated policy classes
-- 🎯 **Scope Filtering** - Automatically filter collections based on user permissions
-- 🔑 **Role-Based Access** - Built-in support for role-based authorization
-- 🚀 **Zero Dependencies** - No external gems required (only Rails)
-- ✅ **Strong Parameters Integration** - Automatically build permitted params from policies
-- 🧪 **Test Friendly** - Easy to test policies in isolation
-- 📝 **Rails Generators** - Quickly scaffold policies for your models
+- **Policy-Based Authorization** - Define authorization rules in dedicated policy classes
+- **Scope Filtering** - Automatically filter collections based on user permissions
+- **Role-Based Access** - Built-in support for role-based authorization
+- **Zero Dependencies** - No external gems required (only Rails)
+- **Strong Parameters Integration** - Automatically build permitted params from policies
+- **Test Friendly** - Easy to test policies in isolation
+- **Rails Generators** - Quickly scaffold policies for your models
 
 ## Installation
 
@@ -295,7 +296,7 @@ end
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+To install this gem onto your local machine, run `bundle exec rake install`.
 
 ## Comparison with Pundit
 
