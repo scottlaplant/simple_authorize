@@ -6,3 +6,9 @@
 /pkg/
 /spec/reports/
 /tmp/
+
+# macOS
+.DS_Store
+
+# Project-specific
+EXTRACTION_SUMMARY.md
