@@ -7,13 +7,13 @@ SimpleAuthorize is a lightweight, powerful authorization framework for Rails tha
 
 ## Features
 
-- 🔒 **Policy-Based Authorization** - Define authorization rules in dedicated policy classes
-- 🎯 **Scope Filtering** - Automatically filter collections based on user permissions
-- 🔑 **Role-Based Access** - Built-in support for role-based authorization
-- 🚀 **Zero Dependencies** - No external gems required (only Rails)
-- ✅ **Strong Parameters Integration** - Automatically build permitted params from policies
-- 🧪 **Test Friendly** - Easy to test policies in isolation
-- 📝 **Rails Generators** - Quickly scaffold policies for your models
+- **Policy-Based Authorization** - Define authorization rules in dedicated policy classes
+- **Scope Filtering** - Automatically filter collections based on user permissions
+- **Role-Based Access** - Built-in support for role-based authorization
+- **Zero Dependencies** - No external gems required (only Rails)
+- **Strong Parameters Integration** - Automatically build permitted params from policies
+- **Test Friendly** - Easy to test policies in isolation
+- **Rails Generators** - Quickly scaffold policies for your models
 
 ## Installation
 
@@ -295,7 +295,7 @@ end
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+To install this gem onto your local machine, run `bundle exec rake install`.
 
 ## Comparison with Pundit
 
