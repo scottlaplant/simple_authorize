@@ -17,16 +17,27 @@ SimpleAuthorize is a lightweight, powerful authorization framework for Rails tha
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Install the gem directly:
+
+```bash
+gem install simple_authorize
+```
+
+Or add this line to your application's Gemfile:
 
 ```ruby
 gem 'simple_authorize'
 ```
 
-And then execute:
+Then execute:
 
 ```bash
 bundle install
+```
+
+After installation, run the generator to set up your application:
+
+```bash
 rails generate simple_authorize:install
 ```
 
