@@ -1,0 +1,321 @@
+# SimpleAuthorize
+
+[![Gem Version](https://badge.fury.io/rb/simple_authorize.svg)](https://badge.fury.io/rb/simple_authorize)
+[![Ruby](https://github.com/scottlaplant/simple_authorize/workflows/Ruby/badge.svg)](https://github.com/scottlaplant/simple_authorize/actions)
+
+SimpleAuthorize is a lightweight, powerful authorization framework for Rails that provides policy-based access control without external dependencies. Inspired by Pundit, it offers a clean API for managing permissions in your Rails applications.
+
+## Features
+
+- 🔒 **Policy-Based Authorization** - Define authorization rules in dedicated policy classes
+- 🎯 **Scope Filtering** - Automatically filter collections based on user permissions
+- 🔑 **Role-Based Access** - Built-in support for role-based authorization
+- 🚀 **Zero Dependencies** - No external gems required (only Rails)
+- ✅ **Strong Parameters Integration** - Automatically build permitted params from policies
+- 🧪 **Test Friendly** - Easy to test policies in isolation
+- 📝 **Rails Generators** - Quickly scaffold policies for your models
+
+## Installation
+
+Add this line to your application's Gemfile:
+
+```ruby
+gem 'simple_authorize'
+```
+
+And then execute:
+
+```bash
+bundle install
+rails generate simple_authorize:install
+```
+
+This will create:
+- `config/initializers/simple_authorize.rb` - Configuration file
+- `app/policies/application_policy.rb` - Base policy class
+
+## Quick Start
+
+### 1. Include SimpleAuthorize in your ApplicationController
+
+```ruby
+class ApplicationController < ActionController::Base
+  include SimpleAuthorize::Controller
+  rescue_from_authorization_errors
+end
+```
+
+### 2. Create a Policy
+
+Create a policy class for your model in `app/policies/`:
+
+```ruby
+# app/policies/post_policy.rb
+class PostPolicy < ApplicationPolicy
+  def index?
+    true
+  end
+
+  def show?
+    true
+  end
+
+  def create?
+    user.present?
+  end
+
+  def update?
+    user.present? && (record.user_id == user.id || user.admin?)
+  end
+
+  def destroy?
+    update?
+  end
+
+  class Scope < ApplicationPolicy::Scope
+    def resolve
+      if user&.admin?
+        scope.all
+      else
+        scope.where(published: true)
+      end
+    end
+  end
+end
+```
+
+### 3. Use Authorization in Your Controllers
+
+```ruby
+class PostsController < ApplicationController
+  def index
+    @posts = policy_scope(Post)
+  end
+
+  def show
+    @post = Post.find(params[:id])
+    authorize @post
+  end
+
+  def create
+    @post = Post.new(post_params)
+    authorize @post
+
+    if @post.save
+      redirect_to @post
+    else
+      render :new
+    end
+  end
+
+  private
+
+  def post_params
+    params.require(:post).permit(:title, :body, :published)
+  end
+end
+```
+
+### 4. Use in Views
+
+Check permissions in your views:
+
+```erb
+<% if policy(@post).update? %>
+  <%= link_to "Edit", edit_post_path(@post) %>
+<% end %>
+
+<% if policy(@post).destroy? %>
+  <%= link_to "Delete", post_path(@post), method: :delete %>
+<% end %>
+```
+
+## Core Concepts
+
+### Policies
+
+Policies are plain Ruby objects that encapsulate authorization logic. Each policy corresponds to a model and defines what actions users can perform.
+
+```ruby
+class PostPolicy < ApplicationPolicy
+  def update?
+    # Only the owner or an admin can update
+    user.present? && (record.user_id == user.id || user.admin?)
+  end
+end
+```
+
+### Scopes
+
+Scopes filter collections based on user permissions:
+
+```ruby
+class PostPolicy < ApplicationPolicy
+  class Scope < ApplicationPolicy::Scope
+    def resolve
+      if user&.admin?
+        scope.all
+      else
+        scope.where(published: true)
+      end
+    end
+  end
+end
+```
+
+Use in controllers:
+
+```ruby
+def index
+  @posts = policy_scope(Post)
+end
+```
+
+### Strong Parameters
+
+SimpleAuthorize can automatically build permitted parameters from policies:
+
+```ruby
+class PostPolicy < ApplicationPolicy
+  def permitted_attributes
+    if user&.admin?
+      [:title, :body, :published, :featured]
+    else
+      [:title, :body]
+    end
+  end
+end
+```
+
+Use in controllers:
+
+```ruby
+def post_params
+  policy_params(Post, :post)
+  # Or manually:
+  # params.require(:post).permit(*permitted_attributes(Post.new))
+end
+```
+
+## Advanced Features
+
+### Headless Policies
+
+For policies that don't correspond to a model:
+
+```ruby
+class DashboardPolicy < ApplicationPolicy
+  def show?
+    user&.admin?
+  end
+end
+
+# In controller:
+def show
+  authorize_headless(DashboardPolicy)
+end
+```
+
+### Custom Query Methods
+
+Define custom authorization queries:
+
+```ruby
+class PostPolicy < ApplicationPolicy
+  def publish?
+    user&.admin? || (user&.contributor? && owner?)
+  end
+end
+
+# In controller:
+authorize @post, :publish?
+```
+
+### Automatic Verification
+
+Ensure every action is authorized:
+
+```ruby
+class ApplicationController < ActionController::Base
+  include SimpleAuthorize::Controller
+  include SimpleAuthorize::Controller::AutoVerify  # Enable auto-verification
+  rescue_from_authorization_errors
+end
+```
+
+This will require `authorize` or `policy_scope` in all actions.
+
+Skip verification when needed:
+
+```ruby
+class PublicController < ApplicationController
+  skip_authorization_check :index, :show
+end
+```
+
+## Testing
+
+Test policies in isolation:
+
+```ruby
+require 'test_helper'
+
+class PostPolicyTest < ActiveSupport::TestCase
+  test "admin can update any post" do
+    admin = users(:admin)
+    post = posts(:one)
+    policy = PostPolicy.new(admin, post)
+
+    assert policy.update?
+  end
+
+  test "user can only update their own posts" do
+    user = users(:regular)
+    own_post = posts(:user_post)
+    other_post = posts(:other_post)
+
+    assert PostPolicy.new(user, own_post).update?
+    refute PostPolicy.new(user, other_post).update?
+  end
+end
+```
+
+## Development
+
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+
+To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+
+## Comparison with Pundit
+
+SimpleAuthorize is heavily inspired by Pundit and offers a similar API. Key differences:
+
+| Feature | SimpleAuthorize | Pundit |
+|---------|----------------|--------|
+| Dependencies | None (Rails only) | Standalone gem |
+| Base class | `SimpleAuthorize::Policy` | `ApplicationPolicy` (user-defined) |
+| Installation | Generator creates base policy | Manual setup required |
+| Module name | `SimpleAuthorize::Controller` | `Pundit` |
+| Compatibility | Rails 6.0+ | Rails 4.0+ |
+
+Migration from Pundit is straightforward - most code will work with minimal changes.
+
+## Contributing
+
+Bug reports and pull requests are welcome on GitHub at https://github.com/scottlaplant/simple_authorize.
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
+
+## License
+
+The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
+## Credits
+
+Created by Scott LaPlant
+
+Inspired by [Pundit](https://github.com/varvet/pundit) by Elabs

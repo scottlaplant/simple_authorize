@@ -1,0 +1,80 @@
+===============================================================================
+
+  SimpleAuthorize has been installed!
+
+===============================================================================
+
+Next steps:
+
+  1. Include SimpleAuthorize::Controller in your ApplicationController:
+
+     class ApplicationController < ActionController::Base
+       include SimpleAuthorize::Controller
+       rescue_from_authorization_errors
+     end
+
+  2. Create policies for your models in app/policies/:
+
+     # app/policies/post_policy.rb
+     class PostPolicy < ApplicationPolicy
+       def index?
+         true
+       end
+
+       def show?
+         true
+       end
+
+       def create?
+         user.present?
+       end
+
+       def update?
+         user.present? && (record.user_id == user.id || user.admin?)
+       end
+
+       def destroy?
+         update?
+       end
+
+       class Scope < ApplicationPolicy::Scope
+         def resolve
+           if user&.admin?
+             scope.all
+           else
+             scope.where(published: true)
+           end
+         end
+       end
+     end
+
+  3. Use authorization in your controllers:
+
+     class PostsController < ApplicationController
+       def index
+         @posts = policy_scope(Post)
+       end
+
+       def show
+         @post = Post.find(params[:id])
+         authorize @post
+       end
+
+       def create
+         @post = Post.new(post_params)
+         authorize @post
+         # ...
+       end
+     end
+
+  4. (Optional) Enable automatic verification:
+
+     class ApplicationController < ActionController::Base
+       include SimpleAuthorize::Controller
+       include SimpleAuthorize::Controller::AutoVerify
+       rescue_from_authorization_errors
+     end
+
+For more information, see: https://github.com/yourusername/simple_authorize
+
+===============================================================================
