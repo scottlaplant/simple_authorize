@@ -71,6 +71,3 @@ When using SimpleAuthorize in your application:
 
 SimpleAuthorize has minimal dependencies (only Rails/ActiveSupport). We monitor our dependencies for security vulnerabilities and update promptly.
 
-## Questions?
-
-If you have questions about this security policy or SimpleAuthorize's security practices, please email scottlaplant@gmail.com.
