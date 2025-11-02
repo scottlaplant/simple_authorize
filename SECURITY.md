@@ -16,7 +16,6 @@ We take the security of SimpleAuthorize seriously. If you discover a security vu
 
 1. **DO NOT** open a public GitHub issue for security vulnerabilities
 2. Use GitHub's private vulnerability reporting feature (see "Security" tab in the repository)
-3. Or email security reports to: scottlaplant@gmail.com
 
 ### What to Include
 
