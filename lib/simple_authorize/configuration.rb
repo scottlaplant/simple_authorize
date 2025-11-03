@@ -24,6 +24,12 @@ module SimpleAuthorize
     # Include detailed error information in API responses (default: false)
     attr_accessor :api_error_details
 
+    # Enable I18n support for error messages (default: false)
+    attr_accessor :i18n_enabled
+
+    # I18n scope for translations (default: 'simple_authorize')
+    attr_accessor :i18n_scope
+
     def initialize
       @default_error_message = "You are not authorized to perform this action."
       @auto_verify = false
@@ -32,6 +38,8 @@ module SimpleAuthorize
       @enable_policy_cache = false
       @enable_instrumentation = true
       @api_error_details = false
+      @i18n_enabled = false
+      @i18n_scope = "simple_authorize"
     end
   end
 

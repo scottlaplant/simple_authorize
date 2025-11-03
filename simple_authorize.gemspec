@@ -37,6 +37,7 @@ Gem::Specification.new do |spec|
 
   # Dependencies
   spec.add_dependency "activesupport", ">= 6.0"
+  spec.add_dependency "i18n", ">= 1.0"
   spec.add_dependency "railties", ">= 6.0"
 
   # Development dependencies

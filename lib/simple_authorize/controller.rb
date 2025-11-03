@@ -20,9 +20,65 @@ module SimpleAuthorize
           @record = options[:record]
           @policy = options[:policy]
 
-          message = options[:message] || "not allowed to #{@query} this #{@record.class}"
+          message = options[:message] || build_error_message
           super(message)
         end
+      end
+
+      private
+
+      def build_error_message
+        # Return default message if I18n is disabled
+        return "not allowed to #{@query} this #{@record.class}" unless i18n_enabled?
+
+        # Try to find translation with fallback chain
+        translate_error || default_i18n_message
+      end
+
+      def i18n_enabled?
+        SimpleAuthorize.configuration.i18n_enabled
+      end
+
+      def translate_error
+        return nil unless defined?(I18n)
+        return nil unless @policy&.class
+
+        # Extract action name from query (remove trailing ?)
+        action = @query.to_s.delete_suffix("?")
+        policy_class_name = @policy.class.name
+        return nil unless policy_class_name
+
+        policy_name = policy_class_name.underscore
+
+        # Try specific policy + action translation
+        key = "#{i18n_scope}.policies.#{policy_name}.#{action}.denied"
+        translation = I18n.t(key, **translation_options, default: nil)
+        return translation if translation.present?
+
+        nil
+      rescue StandardError
+        # If any error occurs during translation lookup, return nil to use default
+        nil
+      end
+
+      def translation_options
+        {
+          record_type: @record&.class&.name || "record",
+          record_id: @record.respond_to?(:id) ? @record.id : nil,
+          action: @query.to_s.delete_suffix("?"),
+          user_role: @policy&.user&.role || "user"
+        }.compact
+      end
+
+      def default_i18n_message
+        return "not allowed to #{@query} this #{@record.class}" unless defined?(I18n)
+
+        I18n.t("#{i18n_scope}.errors.not_authorized",
+               default: "You are not authorized to perform this action")
+      end
+
+      def i18n_scope
+        SimpleAuthorize.configuration.i18n_scope
       end
     end
 
