@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Policy generator (`rails g simple_authorize:policy ModelName`) with support for:
+  - Namespaced models (e.g., `Admin::Post`)
+  - RSpec or Minitest test generation
+  - Automatic test scaffolding with CRUD and scope tests
 - Initial release of SimpleAuthorize
 - Policy-based authorization system
 - Controller concern with authorization methods

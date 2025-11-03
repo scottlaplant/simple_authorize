@@ -1,0 +1,65 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+<% if class_path.any? -%>
+module <%= class_path.map(&:camelize).join('::') %>
+<% end -%>
+  class <%= policy_class_name %>Test < ActiveSupport::TestCase
+    def setup
+      @user = User.new
+      @<%= model_instance_name %> = <%= model_class_name %>.new
+    end
+
+    test "index?" do
+      policy = <%= namespaced_policy_class %>.new(@user, @<%= model_instance_name %>)
+
+      # TODO: Add your authorization logic tests
+      refute policy.index?
+    end
+
+    test "show?" do
+      policy = <%= namespaced_policy_class %>.new(@user, @<%= model_instance_name %>)
+
+      # TODO: Add your authorization logic tests
+      refute policy.show?
+    end
+
+    test "create?" do
+      policy = <%= namespaced_policy_class %>.new(@user, @<%= model_instance_name %>)
+
+      # TODO: Add your authorization logic tests
+      refute policy.create?
+    end
+
+    test "update?" do
+      policy = <%= namespaced_policy_class %>.new(@user, @<%= model_instance_name %>)
+
+      # TODO: Add your authorization logic tests
+      refute policy.update?
+    end
+
+    test "destroy?" do
+      policy = <%= namespaced_policy_class %>.new(@user, @<%= model_instance_name %>)
+
+      # TODO: Add your authorization logic tests
+      refute policy.destroy?
+    end
+
+    test "scope" do
+      # TODO: Add your scope tests
+      # For example:
+      # scope = <%= namespaced_policy_class %>::Scope.new(@user, <%= model_class_name %>.all)
+      # assert_equal expected_records, scope.resolve
+    end
+
+    test "permitted_attributes" do
+      policy = <%= namespaced_policy_class %>.new(@user, @<%= model_instance_name %>)
+
+      # TODO: Add your permitted attributes tests
+      assert_equal [], policy.permitted_attributes
+    end
+  end
+<% if class_path.any? -%>
+end
+<% end -%>

@@ -59,7 +59,17 @@ end
 
 ### 2. Create a Policy
 
-Create a policy class for your model in `app/policies/`:
+Generate a policy for your model using the generator:
+
+```bash
+rails generate simple_authorize:policy Post
+```
+
+This creates:
+- `app/policies/post_policy.rb` - Policy class with CRUD methods
+- `test/policies/post_policy_test.rb` - Test file (or spec file with `--spec`)
+
+Or create a policy class manually in `app/policies/`:
 
 ```ruby
 # app/policies/post_policy.rb
@@ -207,6 +217,47 @@ def post_params
   # Or manually:
   # params.require(:post).permit(*permitted_attributes(Post.new))
 end
+```
+
+## Generators
+
+SimpleAuthorize provides Rails generators to quickly scaffold policies:
+
+### Install Generator
+
+```bash
+rails generate simple_authorize:install
+```
+
+Creates:
+- `config/initializers/simple_authorize.rb` - Configuration file
+- `app/policies/application_policy.rb` - Base policy class
+
+### Policy Generator
+
+```bash
+rails generate simple_authorize:policy Post
+```
+
+Creates:
+- `app/policies/post_policy.rb` - Policy with CRUD methods and scope
+- `test/policies/post_policy_test.rb` - Minitest tests
+
+**Options:**
+- `--spec` - Generate RSpec tests instead of Minitest
+- `--skip-test` - Skip test file generation
+
+**Examples:**
+
+```bash
+# Generate policy with RSpec tests
+rails generate simple_authorize:policy Post --spec
+
+# Generate policy without tests
+rails generate simple_authorize:policy Post --skip-test
+
+# Generate namespaced policy
+rails generate simple_authorize:policy Admin::Post
 ```
 
 ## Advanced Features

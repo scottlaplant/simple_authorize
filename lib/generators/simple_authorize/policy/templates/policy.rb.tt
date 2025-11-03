@@ -1,0 +1,39 @@
+# frozen_string_literal: true
+
+<% if class_path.any? -%>
+module <%= class_path.map(&:camelize).join('::') %>
+<% end -%>
+  class <%= policy_class_name %> < ApplicationPolicy
+    def index?
+      false
+    end
+
+    def show?
+      false
+    end
+
+    def create?
+      false
+    end
+
+    def update?
+      false
+    end
+
+    def destroy?
+      false
+    end
+
+    def permitted_attributes
+      []
+    end
+
+    class Scope < ApplicationPolicy::Scope
+      def resolve
+        scope.all
+      end
+    end
+  end
+<% if class_path.any? -%>
+end
+<% end -%>

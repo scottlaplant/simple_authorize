@@ -1,0 +1,73 @@
+# frozen_string_literal: true
+
+require "rails_helper"
+
+<% if class_path.any? -%>
+module <%= class_path.map(&:camelize).join('::') %>
+<% end -%>
+  RSpec.describe <%= policy_class_name %>, type: :policy do
+    subject(:policy) { described_class.new(user, <%= model_instance_name %>) }
+
+    let(:user) { User.new }
+    let(:<%= model_instance_name %>) { <%= model_class_name %>.new }
+
+    describe "#index?" do
+      it "denies access by default" do
+        expect(policy).not_to permit_action(:index)
+      end
+
+      # TODO: Add your authorization logic tests
+    end
+
+    describe "#show?" do
+      it "denies access by default" do
+        expect(policy).not_to permit_action(:show)
+      end
+
+      # TODO: Add your authorization logic tests
+    end
+
+    describe "#create?" do
+      it "denies access by default" do
+        expect(policy).not_to permit_action(:create)
+      end
+
+      # TODO: Add your authorization logic tests
+    end
+
+    describe "#update?" do
+      it "denies access by default" do
+        expect(policy).not_to permit_action(:update)
+      end
+
+      # TODO: Add your authorization logic tests
+    end
+
+    describe "#destroy?" do
+      it "denies access by default" do
+        expect(policy).not_to permit_action(:destroy)
+      end
+
+      # TODO: Add your authorization logic tests
+    end
+
+    describe "#permitted_attributes" do
+      it "returns empty array by default" do
+        expect(policy.permitted_attributes).to eq([])
+      end
+
+      # TODO: Add your permitted attributes tests
+    end
+
+    describe "Scope" do
+      subject(:scope) { <%= namespaced_policy_class %>::Scope.new(user, <%= model_class_name %>.all) }
+
+      it "returns all records by default" do
+        # TODO: Add your scope tests
+        expect(scope.resolve).to eq(<%= model_class_name %>.all)
+      end
+    end
+  end
+<% if class_path.any? -%>
+end
+<% end -%>
