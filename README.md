@@ -315,6 +315,70 @@ test "multiple checks use cached policy" do
 end
 ```
 
+### Instrumentation & Audit Logging
+
+SimpleAuthorize emits `ActiveSupport::Notifications` events for all authorization checks, perfect for security auditing, debugging, and monitoring:
+
+```ruby
+# Subscribe to authorization events
+ActiveSupport::Notifications.subscribe("authorize.simple_authorize") do |name, start, finish, id, payload|
+  duration = finish - start
+
+  Rails.logger.info({
+    event: "authorization",
+    user_id: payload[:user_id],
+    action: payload[:query],
+    resource: "#{payload[:record_class]}##{payload[:record_id]}",
+    authorized: payload[:authorized],
+    duration_ms: (duration * 1000).round(2)
+  }.to_json)
+end
+
+# Subscribe to policy scope events
+ActiveSupport::Notifications.subscribe("policy_scope.simple_authorize") do |name, start, finish, id, payload|
+  Rails.logger.info("Policy scope applied for #{payload[:scope]} by user #{payload[:user_id]}")
+end
+```
+
+**Event Payloads:**
+
+Authorization events (`authorize.simple_authorize`):
+- `user`: Current user object
+- `user_id`: User ID
+- `record`: The record being authorized
+- `record_id`: Record ID
+- `record_class`: Record class name
+- `query`: Authorization method called (e.g., "update?")
+- `policy_class`: Policy class used
+- `authorized`: Boolean result
+- `error`: Exception if authorization failed
+- `controller`: Controller name (if available)
+- `action`: Action name (if available)
+
+Policy scope events (`policy_scope.simple_authorize`):
+- `user`: Current user object
+- `user_id`: User ID
+- `scope`: The scope being filtered
+- `policy_scope_class`: Scope class used
+- `error`: Exception if scope failed
+- `controller`: Controller name (if available)
+- `action`: Action name (if available)
+
+**Use Cases:**
+- Security auditing and compliance
+- Debugging authorization issues
+- Monitoring authorization performance
+- Sending failed authorization attempts to security services
+- Tracking which users access sensitive resources
+
+**Disable instrumentation** (if needed for performance in specific scenarios):
+
+```ruby
+SimpleAuthorize.configure do |config|
+  config.enable_instrumentation = false
+end
+```
+
 ### Other Configuration Options
 
 ```ruby

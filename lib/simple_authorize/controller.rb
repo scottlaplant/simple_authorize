@@ -54,7 +54,17 @@ module SimpleAuthorize
       query ||= "#{action_name}?"
       @_policy = policy(record, policy_class: policy_class)
 
-      raise NotAuthorizedError.new(query: query, record: record, policy: @_policy) unless @_policy.public_send(query)
+      authorized = @_policy.public_send(query)
+      error = nil
+
+      unless authorized
+        error = NotAuthorizedError.new(query: query, record: record, policy: @_policy)
+      end
+
+      # Emit instrumentation event
+      instrument_authorization(record, query, @_policy.class, authorized, error) if instrumentation_enabled?
+
+      raise error if error
 
       @authorization_performed = true
       record
@@ -95,9 +105,21 @@ module SimpleAuthorize
       @policy_scoping_performed = true
 
       policy_scope_class ||= policy_scope_class_for(scope)
-      policy_scope_class.new(authorized_user, scope).resolve
-    rescue NameError
-      raise PolicyNotDefinedError, "unable to find scope `#{policy_scope_class}` for `#{scope}`"
+      result = nil
+      error = nil
+
+      begin
+        result = policy_scope_class.new(authorized_user, scope).resolve
+      rescue NameError
+        error = PolicyNotDefinedError.new("unable to find scope `#{policy_scope_class}` for `#{scope}`")
+      end
+
+      # Emit instrumentation event
+      instrument_policy_scope(scope, policy_scope_class, error) if instrumentation_enabled?
+
+      raise error if error
+
+      result
     end
 
     # Ensure scope exists, raising if not found
@@ -183,7 +205,17 @@ module SimpleAuthorize
       query ||= "#{action_name}?"
       policy = policy_class.new(authorized_user, nil)
 
-      raise NotAuthorizedError.new(query: query, record: policy_class, policy: policy) unless policy.public_send(query)
+      authorized = policy.public_send(query)
+      error = nil
+
+      unless authorized
+        error = NotAuthorizedError.new(query: query, record: policy_class, policy: policy)
+      end
+
+      # Emit instrumentation event (with nil record for headless policies)
+      instrument_authorization(nil, query, policy_class, authorized, error) if instrumentation_enabled?
+
+      raise error if error
 
       @authorization_performed = true
       true
@@ -241,6 +273,61 @@ module SimpleAuthorize
       policy_key = policy_class.name
 
       "#{user_key}/#{record_key}/#{policy_key}"
+    end
+
+    # Check if instrumentation is enabled
+    def instrumentation_enabled?
+      SimpleAuthorize.configuration.enable_instrumentation
+    end
+
+    # Emit authorization instrumentation event
+    def instrument_authorization(record, query, policy_class, authorized, error)
+      ActiveSupport::Notifications.instrument("authorize.simple_authorize",
+                                               build_instrumentation_payload(record, query, policy_class, authorized, error))
+    end
+
+    # Emit policy scope instrumentation event
+    def instrument_policy_scope(scope, policy_scope_class, error)
+      ActiveSupport::Notifications.instrument("policy_scope.simple_authorize",
+                                               build_scope_payload(scope, policy_scope_class, error))
+    end
+
+    # Build payload for authorization events
+    def build_instrumentation_payload(record, query, policy_class, authorized, error)
+      payload = {
+        user: authorized_user,
+        user_id: authorized_user&.id,
+        record: record,
+        record_id: record.respond_to?(:id) ? record&.id : nil,
+        record_class: record&.class&.name,
+        query: query.to_s,
+        policy_class: policy_class,
+        authorized: authorized,
+        error: error
+      }
+
+      # Add controller and action info if available
+      payload[:controller] = controller_name if respond_to?(:controller_name)
+      payload[:action] = action_name if respond_to?(:action_name)
+
+      payload
+    end
+
+    # Build payload for policy scope events
+    def build_scope_payload(scope, policy_scope_class, error)
+      payload = {
+        user: authorized_user,
+        user_id: authorized_user&.id,
+        scope: scope,
+        policy_scope_class: policy_scope_class,
+        error: error
+      }
+
+      # Add controller and action info if available
+      payload[:controller] = controller_name if respond_to?(:controller_name)
+      payload[:action] = action_name if respond_to?(:action_name)
+
+      payload
     end
 
     def policy_class_for(record, namespace: nil)

@@ -18,12 +18,16 @@ module SimpleAuthorize
     # Enable policy caching for performance optimization (opt-in)
     attr_accessor :enable_policy_cache
 
+    # Enable instrumentation for authorization events (default: true)
+    attr_accessor :enable_instrumentation
+
     def initialize
       @default_error_message = "You are not authorized to perform this action."
       @auto_verify = false
       @current_user_method = :current_user
       @unauthorized_redirect_path = nil
       @enable_policy_cache = false
+      @enable_instrumentation = true
     end
   end
 

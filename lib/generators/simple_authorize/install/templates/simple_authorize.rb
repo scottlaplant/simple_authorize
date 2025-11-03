@@ -17,4 +17,8 @@ SimpleAuthorize.configure do |config|
   # Enable policy caching for performance optimization (default: false)
   # When enabled, policy instances are cached per request, scoped by user, record, and policy class
   # config.enable_policy_cache = true
+
+  # Enable instrumentation for authorization events (default: true)
+  # When enabled, emits ActiveSupport::Notifications events for all authorization checks
+  # config.enable_instrumentation = true
 end

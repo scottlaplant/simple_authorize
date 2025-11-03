@@ -10,8 +10,8 @@ class InstrumentationTest < ActiveSupport::TestCase
     @controller = MockController.new(@user)
     @events = []
 
-    # Subscribe to authorization events
-    @subscriber = ActiveSupport::Notifications.subscribe("authorize.simple_authorize") do |name, start, finish, _id, payload| # rubocop:disable Layout/LineLength
+    # Subscribe to all SimpleAuthorize events
+    @subscriber = ActiveSupport::Notifications.subscribe(/simple_authorize/) do |name, start, finish, _id, payload|
       @events << {
         name: name,
         duration: finish - start,
@@ -78,7 +78,7 @@ class InstrumentationTest < ActiveSupport::TestCase
     @controller.authorize(@post, :show?)
 
     event = @events.first
-    assert_equal "MockController", event[:payload][:controller]
+    assert_equal "InstrumentationTest::MockController", event[:payload][:controller]
     assert_equal "index", event[:payload][:action]
   end
 

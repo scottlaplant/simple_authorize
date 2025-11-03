@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Configurable via `config.enable_policy_cache`
   - `clear_policy_cache` method for manual cache clearing
   - Automatic cache clearing in `reset_authorization` for tests
+- Instrumentation and audit logging via ActiveSupport::Notifications:
+  - Emits events for `authorize`, `authorize_headless`, and `policy_scope` calls
+  - Rich payload with user, record, query, result, and timing information
+  - Enabled by default, configurable via `config.enable_instrumentation`
+  - Perfect for security audits, debugging, and monitoring
 - Initial release of SimpleAuthorize
 - Policy-based authorization system
 - Controller concern with authorization methods
