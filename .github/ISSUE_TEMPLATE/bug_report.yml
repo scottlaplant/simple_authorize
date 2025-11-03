@@ -1,0 +1,134 @@
+name: Bug Report
+description: Report a bug or unexpected behavior
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the sections below to help us understand and fix the issue.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: When I try to authorize a user...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: The user should be authorized to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: Instead, I got an error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Provide detailed steps to reproduce the issue
+      placeholder: |
+        1. Create a policy with...
+        2. In the controller, call...
+        3. See error...
+      value: |
+        1. 
+        2. 
+        3. 
+    validations:
+      required: true
+
+  - type: textarea
+    id: code
+    attributes:
+      label: Code Sample
+      description: Please provide relevant code (policy, controller, model)
+      render: ruby
+      placeholder: |
+        class PostPolicy < SimpleAuthorize::Policy
+          def update?
+            # Your code here
+          end
+        end
+
+  - type: textarea
+    id: error
+    attributes:
+      label: Error Message / Stack Trace
+      description: If applicable, include the full error message and stack trace
+      render: shell
+      placeholder: |
+        SimpleAuthorize::Controller::NotAuthorizedError: not allowed to update? this Post
+          from lib/simple_authorize/controller.rb:121:in `authorize'
+
+  - type: input
+    id: gem-version
+    attributes:
+      label: SimpleAuthorize Version
+      description: What version of SimpleAuthorize are you using?
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: rails-version
+    attributes:
+      label: Rails Version
+      description: What version of Rails are you using?
+      placeholder: "7.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: ruby-version
+    attributes:
+      label: Ruby Version
+      description: What version of Ruby are you using?
+      placeholder: "3.2.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Additional Environment Details
+      description: OS, database, other relevant gems, etc.
+      placeholder: |
+        - OS: macOS 14.0
+        - Database: PostgreSQL 15
+        - Other gems: devise, cancancan
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here
+      placeholder: This started happening after I upgraded from...
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please verify the following before submitting
+      options:
+        - label: I have searched existing issues to avoid duplicates
+          required: true
+        - label: I have included all relevant code samples
+          required: true
+        - label: I have included the gem, Rails, and Ruby versions
+          required: true
+        - label: This is not a security vulnerability (those should be reported privately to simpleauthorize@gmail.com)
+          required: true
