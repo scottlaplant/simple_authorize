@@ -20,6 +20,7 @@ Gem::Specification.new do |spec|
   spec.metadata["source_code_uri"] = "https://github.com/scottlaplant/simple_authorize"
   spec.metadata["changelog_uri"] = "https://github.com/scottlaplant/simple_authorize/blob/main/CHANGELOG.md"
   spec.metadata["bug_tracker_uri"] = "https://github.com/scottlaplant/simple_authorize/issues"
+  spec.metadata["documentation_uri"] = "https://github.com/scottlaplant/simple_authorize/wiki"
   spec.metadata["rubygems_mfa_required"] = "true"
 
   # Specify which files should be added to the gem when it is released.
