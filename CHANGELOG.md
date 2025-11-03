@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Namespaced models (e.g., `Admin::Post`)
   - RSpec or Minitest test generation
   - Automatic test scaffolding with CRUD and scope tests
+- Policy caching for performance optimization:
+  - Request-level memoization of policy instances
+  - Automatic scoping by user, record, and policy class
+  - Configurable via `config.enable_policy_cache`
+  - `clear_policy_cache` method for manual cache clearing
+  - Automatic cache clearing in `reset_authorization` for tests
 - Initial release of SimpleAuthorize
 - Policy-based authorization system
 - Controller concern with authorization methods

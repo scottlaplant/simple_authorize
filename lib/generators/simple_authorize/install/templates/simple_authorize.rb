@@ -13,4 +13,8 @@ SimpleAuthorize.configure do |config|
 
   # Custom redirect path for unauthorized access (default: uses referrer or root_path)
   # config.unauthorized_redirect_path = "/unauthorized"
+
+  # Enable policy caching for performance optimization (default: false)
+  # When enabled, policy instances are cached per request, scoped by user, record, and policy class
+  # config.enable_policy_cache = true
 end

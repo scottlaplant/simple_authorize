@@ -72,7 +72,15 @@ module SimpleAuthorize
                        else
                          policy_class_for(record)
                        end
-      policy_class.new(authorized_user, record)
+
+      # Return cached policy if caching is enabled
+      if SimpleAuthorize.configuration.enable_policy_cache
+        policy_cache_key = build_policy_cache_key(record, policy_class)
+        @_policy_cache ||= {}
+        @_policy_cache[policy_cache_key] ||= policy_class.new(authorized_user, record)
+      else
+        policy_class.new(authorized_user, record)
+      end
     rescue NameError
       raise PolicyNotDefinedError, "unable to find policy `#{policy_class}` for `#{record}`"
     end
@@ -157,11 +165,17 @@ module SimpleAuthorize
       current_user
     end
 
+    # Clear the policy cache
+    def clear_policy_cache
+      @_policy_cache = nil
+    end
+
     # Reset authorization tracking (useful in tests)
     def reset_authorization
       @authorization_performed = nil
       @policy_scoping_performed = nil
       @_policy = nil
+      clear_policy_cache
     end
 
     # Support for headless policies (policies without a model)
@@ -214,6 +228,20 @@ module SimpleAuthorize
     end
 
     protected
+
+    # Build a cache key for a policy instance
+    # The key is based on user, record, and policy class to ensure proper scoping
+    def build_policy_cache_key(record, policy_class)
+      user_key = authorized_user&.id || authorized_user.object_id
+      record_key = if record.respond_to?(:id) && record.id.present?
+                     "#{record.class.name}-#{record.id}"
+                   else
+                     "#{record.class.name}-#{record.object_id}"
+                   end
+      policy_key = policy_class.name
+
+      "#{user_key}/#{record_key}/#{policy_key}"
+    end
 
     def policy_class_for(record, namespace: nil)
       klass = record.class

@@ -260,6 +260,76 @@ rails generate simple_authorize:policy Post --skip-test
 rails generate simple_authorize:policy Admin::Post
 ```
 
+## Configuration
+
+SimpleAuthorize can be configured in `config/initializers/simple_authorize.rb`:
+
+### Policy Caching
+
+Enable policy caching to improve performance by caching policy instances per request:
+
+```ruby
+SimpleAuthorize.configure do |config|
+  config.enable_policy_cache = true
+end
+```
+
+**How it works:**
+- Policy instances are cached for the duration of a single request
+- Cache is automatically scoped by user, record, and policy class
+- Each unique combination gets its own cached instance
+- Cache is automatically cleared between requests
+- Particularly useful in views where the same policy may be checked multiple times
+
+**Example performance impact:**
+
+```erb
+<!-- Without caching: Creates 3 separate PostPolicy instances -->
+<% if policy(@post).update? %>
+  <%= link_to "Edit", edit_post_path(@post) %>
+<% end %>
+<% if policy(@post).destroy? %>
+  <%= link_to "Delete", post_path(@post) %>
+<% end %>
+<% if policy(@post).publish? %>
+  <%= link_to "Publish", publish_post_path(@post) %>
+<% end %>
+
+<!-- With caching: Reuses the same PostPolicy instance -->
+```
+
+**Testing:**
+Use `clear_policy_cache` or `reset_authorization` to clear the cache in tests:
+
+```ruby
+test "multiple checks use cached policy" do
+  SimpleAuthorize.configure { |config| config.enable_policy_cache = true }
+
+  policy1 = policy(@post)
+  policy2 = policy(@post)
+  assert_same policy1, policy2  # Same instance
+
+  clear_policy_cache
+  policy3 = policy(@post)
+  refute_same policy1, policy3  # New instance after clearing
+end
+```
+
+### Other Configuration Options
+
+```ruby
+SimpleAuthorize.configure do |config|
+  # Custom error message for unauthorized access
+  config.default_error_message = "Access denied!"
+
+  # Custom redirect path for unauthorized users
+  config.unauthorized_redirect_path = "/access-denied"
+
+  # Custom method to get current user (default: current_user)
+  config.current_user_method = :authenticated_user
+end
+```
+
 ## Advanced Features
 
 ### Headless Policies
