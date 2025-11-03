@@ -6,7 +6,8 @@ We release patches for security vulnerabilities. Currently supported versions:
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.1.x   | :white_check_mark: |
+| 1.0.x   | :white_check_mark: |
+| < 1.0   | :x:                |
 
 ## Reporting a Vulnerability
 
@@ -14,8 +15,11 @@ We take the security of SimpleAuthorize seriously. If you discover a security vu
 
 ### How to Report
 
-1. **DO NOT** open a public GitHub issue for security vulnerabilities
-2. Use GitHub's private vulnerability reporting feature (see "Security" tab in the repository)
+**Please DO NOT open a public GitHub issue for security vulnerabilities.**
+
+Please report security vulnerabilities to: **simpleauthorize@gmail.com**
+
+Alternatively, you can use GitHub's private vulnerability reporting feature (see "Security" tab in the repository).
 
 ### What to Include
 

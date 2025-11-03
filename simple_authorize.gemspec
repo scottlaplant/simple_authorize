@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name = "simple_authorize"
   spec.version = SimpleAuthorize::VERSION
   spec.authors = ["Scott"]
-  spec.email = ["scottlaplant@users.noreply.github.com"]
+  spec.email = ["simpleauthorize@gmail.com"]
 
   spec.summary = "Simple, powerful authorization for Rails without external dependencies"
   spec.description = "SimpleAuthorize is a lightweight authorization framework for Rails that provides " \
