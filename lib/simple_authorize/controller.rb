@@ -57,9 +57,7 @@ module SimpleAuthorize
       authorized = @_policy.public_send(query)
       error = nil
 
-      unless authorized
-        error = NotAuthorizedError.new(query: query, record: record, policy: @_policy)
-      end
+      error = NotAuthorizedError.new(query: query, record: record, policy: @_policy) unless authorized
 
       # Emit instrumentation event
       instrument_authorization(record, query, @_policy.class, authorized, error) if instrumentation_enabled?
@@ -208,9 +206,7 @@ module SimpleAuthorize
       authorized = policy.public_send(query)
       error = nil
 
-      unless authorized
-        error = NotAuthorizedError.new(query: query, record: policy_class, policy: policy)
-      end
+      error = NotAuthorizedError.new(query: query, record: policy_class, policy: policy) unless authorized
 
       # Emit instrumentation event (with nil record for headless policies)
       instrument_authorization(nil, query, policy_class, authorized, error) if instrumentation_enabled?
@@ -283,13 +279,14 @@ module SimpleAuthorize
     # Emit authorization instrumentation event
     def instrument_authorization(record, query, policy_class, authorized, error)
       ActiveSupport::Notifications.instrument("authorize.simple_authorize",
-                                               build_instrumentation_payload(record, query, policy_class, authorized, error))
+                                              build_instrumentation_payload(record, query, policy_class, authorized,
+                                                                            error))
     end
 
     # Emit policy scope instrumentation event
     def instrument_policy_scope(scope, policy_scope_class, error)
       ActiveSupport::Notifications.instrument("policy_scope.simple_authorize",
-                                               build_scope_payload(scope, policy_scope_class, error))
+                                              build_scope_payload(scope, policy_scope_class, error))
     end
 
     # Build payload for authorization events
