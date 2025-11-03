@@ -256,9 +256,41 @@ module SimpleAuthorize
     # Check if user can perform action without raising
     def allowed_to?(action, record, policy_class: nil)
       policy = policy(record, policy_class: policy_class)
-      policy.public_send("#{action}?")
+      query = action.to_s.end_with?("?") ? action.to_s : "#{action}?"
+      policy.public_send(query)
     rescue PolicyNotDefinedError
       false
+    end
+
+    # Batch Authorization Methods
+
+    # Authorize all records or raise on first failure
+    def authorize_all(records, query = nil, policy_class: nil)
+      query ||= "#{action_name}?"
+
+      records.each do |record|
+        authorize(record, query, policy_class: policy_class)
+      end
+
+      records
+    end
+
+    # Return only authorized records
+    def authorized_records(records, query = nil, policy_class: nil)
+      query ||= "#{action_name}?"
+
+      records.select do |record|
+        allowed_to?(query, record, policy_class: policy_class)
+      end
+    end
+
+    # Partition records into [authorized, unauthorized]
+    def partition_records(records, query = nil, policy_class: nil)
+      query ||= "#{action_name}?"
+
+      records.partition do |record|
+        allowed_to?(query, record, policy_class: policy_class)
+      end
     end
 
     # Get all allowed actions for a record
