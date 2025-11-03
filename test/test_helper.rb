@@ -86,6 +86,52 @@ class PostPolicy < SimpleAuthorize::Policy
     end
   end
 
+  def visible_attributes
+    if user&.admin?
+      %i[id title body published user_id]
+    elsif user.present?
+      %i[id title body published]
+    else
+      []
+    end
+  end
+
+  def visible_attributes_for_index
+    if user&.admin?
+      %i[id title published]
+    else
+      %i[id title]
+    end
+  end
+
+  def visible_attributes_for_show
+    visible_attributes
+  end
+
+  def editable_attributes
+    if user&.admin?
+      %i[title body published]
+    elsif user&.contributor?
+      %i[title body]
+    else
+      []
+    end
+  end
+
+  def editable_attributes_for_create
+    if user&.admin?
+      %i[title body published]
+    elsif user&.contributor?
+      %i[title body]
+    else
+      []
+    end
+  end
+
+  def editable_attributes_for_update
+    editable_attributes
+  end
+
   class Scope < SimpleAuthorize::Policy::Scope
     def resolve
       if user&.admin?

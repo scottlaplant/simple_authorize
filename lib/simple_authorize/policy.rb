@@ -39,6 +39,28 @@ module SimpleAuthorize
       false
     end
 
+    # Attribute-level authorization
+
+    # Returns array of attributes visible to the user
+    def visible_attributes
+      []
+    end
+
+    # Returns array of attributes editable by the user
+    def editable_attributes
+      []
+    end
+
+    # Check if a specific attribute is visible
+    def attribute_visible?(attribute)
+      visible_attributes.include?(attribute.to_sym)
+    end
+
+    # Check if a specific attribute is editable
+    def attribute_editable?(attribute)
+      editable_attributes.include?(attribute.to_sym)
+    end
+
     # Helper methods
     protected
 

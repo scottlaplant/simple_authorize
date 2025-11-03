@@ -140,6 +140,42 @@ module SimpleAuthorize
       end
     end
 
+    # Get visible attributes for a record
+    def visible_attributes(record, action = nil)
+      action ||= action_name
+      policy = policy(record)
+      method_name = "visible_attributes_for_#{action}"
+
+      if policy.respond_to?(method_name)
+        policy.public_send(method_name)
+      elsif policy.respond_to?(:visible_attributes)
+        policy.visible_attributes
+      else
+        []
+      end
+    end
+
+    # Get editable attributes for a record
+    def editable_attributes(record, action = nil)
+      action ||= action_name
+      policy = policy(record)
+      method_name = "editable_attributes_for_#{action}"
+
+      if policy.respond_to?(method_name)
+        policy.public_send(method_name)
+      elsif policy.respond_to?(:editable_attributes)
+        policy.editable_attributes
+      else
+        []
+      end
+    end
+
+    # Filter a hash of attributes to only include visible ones
+    def filter_attributes(record, attributes)
+      visible = visible_attributes(record)
+      attributes.select { |key, _value| visible.include?(key.to_sym) }
+    end
+
     # Automatically build permitted params from policy
     def policy_params(record, param_key = nil)
       param_key ||= record.model_name.param_key
