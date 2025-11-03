@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-# Start SimpleCov before anything else
-require "simplecov"
-SimpleCov.command_name "Minitest"
-
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 require "simple_authorize"
 
