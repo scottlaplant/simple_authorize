@@ -27,19 +27,16 @@ PrePush:
     enabled: true
     description: 'Running RuboCop before push'
     required: true
-    command: ['bundle', 'exec', 'rubocop']
 
   Minitest:
     enabled: true
     description: 'Running Minitest suite'
     required: true
-    command: ['bundle', 'exec', 'rake', 'test']
 
   RSpec:
     enabled: true
     description: 'Running RSpec suite'
     required: true
-    command: ['bundle', 'exec', 'rspec']
 
   # TruffleHog - scan for secrets
   # Note: Requires truffleHog to be installed
