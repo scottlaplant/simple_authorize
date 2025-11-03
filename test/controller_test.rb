@@ -321,7 +321,7 @@ class ControllerTest < ActiveSupport::TestCase
   test "api_request? detects JSON in Accept header" do
     @controller.request = OpenStruct.new(
       format: OpenStruct.new(json?: false, xml?: false, html?: true),
-      headers: {"Accept" => "application/json"}
+      headers: { "Accept" => "application/json" }
     )
     assert @controller.api_request?
   end
@@ -329,7 +329,7 @@ class ControllerTest < ActiveSupport::TestCase
   test "api_request? detects JSON in Content-Type header" do
     @controller.request = OpenStruct.new(
       format: OpenStruct.new(json?: false, xml?: false, html?: true),
-      headers: {"Content-Type" => "application/json"}
+      headers: { "Content-Type" => "application/json" }
     )
     assert @controller.api_request?
   end
@@ -356,7 +356,7 @@ class ControllerTest < ActiveSupport::TestCase
   # Test filter_attributes
   test "filter_attributes returns only visible attributes" do
     @controller.action_name = "show"
-    attributes = {id: 1, title: "Test", body: "Body", secret: "Secret"}
+    attributes = { id: 1, title: "Test", body: "Body", secret: "Secret" }
     filtered = @controller.filter_attributes(@post, attributes)
 
     # Admin can see id, title, body, published, user_id for show action
@@ -369,7 +369,7 @@ class ControllerTest < ActiveSupport::TestCase
   test "filter_attributes respects role-based visibility" do
     @controller.current_user = @viewer
     @controller.action_name = "index"
-    attributes = {id: 1, title: "Test", body: "Body", user_id: 1, published: true}
+    attributes = { id: 1, title: "Test", body: "Body", user_id: 1, published: true }
     filtered = @controller.filter_attributes(@post, attributes)
 
     # For index action, viewer can't see body or user_id
@@ -381,8 +381,8 @@ class ControllerTest < ActiveSupport::TestCase
   # Test policy_params
   test "policy_params builds permitted params from policy" do
     @controller.params = ActionController::Parameters.new({
-                                                             post: {title: "Test", body: "Body", secret: "Secret"}
-                                                           })
+                                                            post: { title: "Test", body: "Body", secret: "Secret" }
+                                                          })
 
     permitted = @controller.policy_params(@post)
     assert_equal "Test", permitted[:title]
@@ -392,8 +392,8 @@ class ControllerTest < ActiveSupport::TestCase
 
   test "policy_params accepts custom param key" do
     @controller.params = ActionController::Parameters.new({
-                                                             article: {title: "Test", body: "Body"}
-                                                           })
+                                                            article: { title: "Test", body: "Body" }
+                                                          })
 
     permitted = @controller.policy_params(@post, :article)
     assert_equal "Test", permitted[:title]
@@ -413,11 +413,11 @@ class ControllerTest < ActiveSupport::TestCase
     response = @controller.api_error_response(
       message: "Error",
       status: 401,
-      details: {reason: "invalid_token"}
+      details: { reason: "invalid_token" }
     )
 
     assert_equal 401, response[:status]
-    assert_equal({reason: "invalid_token"}, response[:body][:details])
+    assert_equal({ reason: "invalid_token" }, response[:body][:details])
   end
 
   # Test visible_attributes
@@ -683,9 +683,7 @@ class ControllerTest < ActiveSupport::TestCase
       policy: policy
     )
 
-    if defined?(I18n)
-      assert_equal "Custom: Cannot update this post", error.message
-    end
+    assert_equal "Custom: Cannot update this post", error.message if defined?(I18n)
   ensure
     SimpleAuthorize.configuration.i18n_enabled = original_setting
   end

@@ -19,7 +19,7 @@ class ControllerCoverageTest < ActiveSupport::TestCase
 
   test "policy_params builds permitted params from policy" do
     controller = MockControllerWithParams.new(@contributor)
-    controller.set_params(post: { title: "Test", body: "Content", published: true, user_id: 999 })
+    controller.with_params(post: { title: "Test", body: "Content", published: true, user_id: 999 })
 
     permitted = controller.policy_params(@post)
 
@@ -30,7 +30,7 @@ class ControllerCoverageTest < ActiveSupport::TestCase
 
   test "policy_params uses custom param_key" do
     controller = MockControllerWithParams.new(@admin)
-    controller.set_params(article: { title: "Test" })
+    controller.with_params(article: { title: "Test" })
 
     permitted = controller.policy_params(@post, :article)
 
@@ -52,7 +52,7 @@ class ControllerCoverageTest < ActiveSupport::TestCase
     )
 
     controller = MockControllerWithParams.new(@viewer)
-    controller.set_params(minimal: { title: "Test" })
+    controller.with_params(minimal: { title: "Test" })
 
     # Stub policy_class_for to return our minimal policy
     controller.define_singleton_method(:policy_class_for) do |_|
@@ -457,7 +457,7 @@ class ControllerCoverageTest < ActiveSupport::TestCase
   class MockControllerWithParams < MockController
     attr_reader :params
 
-    def set_params(hash)
+    def with_params(hash)
       @params = ActionController::Parameters.new(hash)
     end
   end

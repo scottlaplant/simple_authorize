@@ -20,8 +20,8 @@ class ControllerClassMethodsTest < ActiveSupport::TestCase
         @rescued_from = [error_class, options]
       end
 
-      def self.rescued_from
-        @rescued_from
+      class << self
+        attr_reader :rescued_from
       end
 
       rescue_from_authorization_errors
@@ -40,7 +40,7 @@ class ControllerClassMethodsTest < ActiveSupport::TestCase
 
       def self.skip_after_action(callback, options = {})
         @skipped_actions ||= []
-        @skipped_actions << {callback: callback, only: options[:only]}
+        @skipped_actions << { callback: callback, only: options[:only] }
       end
 
       def self.skipped_actions
@@ -55,8 +55,8 @@ class ControllerClassMethodsTest < ActiveSupport::TestCase
     verify_skipped = skipped.find { |s| s[:callback] == :verify_authorized }
     scope_skipped = skipped.find { |s| s[:callback] == :verify_policy_scoped }
 
-    assert_equal [:show, :index], verify_skipped[:only]
-    assert_equal [:show, :index], scope_skipped[:only]
+    assert_equal %i[show index], verify_skipped[:only]
+    assert_equal %i[show index], scope_skipped[:only]
   end
 
   # skip_all_authorization_checks Tests
@@ -65,7 +65,7 @@ class ControllerClassMethodsTest < ActiveSupport::TestCase
     controller_class = Class.new do
       include SimpleAuthorize::Controller
 
-      def self.skip_after_action(callback, options = {})
+      def self.skip_after_action(callback, _options = {})
         @skipped_all ||= []
         @skipped_all << callback
       end
@@ -91,7 +91,7 @@ class ControllerClassMethodsTest < ActiveSupport::TestCase
 
       def self.after_action(callback, options = {})
         @authorized_actions ||= []
-        @authorized_actions << {callback: callback, only: options[:only]}
+        @authorized_actions << { callback: callback, only: options[:only] }
       end
 
       def self.authorized_actions
@@ -104,7 +104,7 @@ class ControllerClassMethodsTest < ActiveSupport::TestCase
     actions = controller_class.authorized_actions
     verify_action = actions.find { |a| a[:callback] == :verify_authorized }
 
-    assert_equal [:create, :update, :destroy], verify_action[:only]
+    assert_equal %i[create update destroy], verify_action[:only]
   end
 
   # scope_actions Tests
@@ -115,7 +115,7 @@ class ControllerClassMethodsTest < ActiveSupport::TestCase
 
       def self.after_action(callback, options = {})
         @scoped_actions ||= []
-        @scoped_actions << {callback: callback, only: options[:only]}
+        @scoped_actions << { callback: callback, only: options[:only] }
       end
 
       def self.scoped_actions
@@ -128,7 +128,7 @@ class ControllerClassMethodsTest < ActiveSupport::TestCase
     actions = controller_class.scoped_actions
     scope_action = actions.find { |a| a[:callback] == :verify_policy_scoped }
 
-    assert_equal [:index, :search], scope_action[:only]
+    assert_equal %i[index search], scope_action[:only]
   end
 
   # AutoVerify Module Tests
@@ -139,7 +139,7 @@ class ControllerClassMethodsTest < ActiveSupport::TestCase
 
       def self.after_action(callback, options = {})
         @callbacks ||= []
-        @callbacks << {callback: callback, except: options[:except], only: options[:only]}
+        @callbacks << { callback: callback, except: options[:except], only: options[:only] }
       end
 
       def self.callbacks
