@@ -13,15 +13,18 @@ Style/StringLiteralsInInterpolation:
 Metrics/ClassLength:
   Exclude:
     - 'test/**/*'
+    - 'spec/**/*'
 
 Metrics/MethodLength:
   Exclude:
     - 'test/**/*'
+    - 'spec/**/*'
     - 'lib/simple_authorize/controller.rb'
 
 Metrics/BlockLength:
   Exclude:
     - 'test/**/*'
+    - 'spec/**/*'
     - '**/*.gemspec'
 
 # Controller module is legitimately large due to comprehensive authorization methods
@@ -62,3 +65,4 @@ Style/Documentation:
   Exclude:
     - 'lib/simple_authorize/configuration.rb'
     - 'test/**/*'
+    - 'spec/**/*'

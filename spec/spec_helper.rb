@@ -2,18 +2,8 @@
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 require "simple_authorize"
-
-require "minitest/autorun"
-require "active_support"
-require "active_support/test_case"
+require "simple_authorize/rspec"
 require "active_model"
-
-# Include test helpers in all test cases
-module ActiveSupport
-  class TestCase
-    include SimpleAuthorize::TestHelpers
-  end
-end
 
 # Mock objects for testing
 class User
@@ -59,7 +49,7 @@ class Post
   end
 end
 
-# Sample policy used across tests
+# Sample policy used across specs
 class PostPolicy < SimpleAuthorize::Policy
   def index?
     true
@@ -85,14 +75,6 @@ class PostPolicy < SimpleAuthorize::Policy
     user&.admin? || (user&.contributor? && owner?)
   end
 
-  def permitted_attributes
-    if user&.admin?
-      %i[title body published]
-    else
-      %i[title body]
-    end
-  end
-
   def visible_attributes
     if user&.admin?
       %i[id title body published user_id]
@@ -101,18 +83,6 @@ class PostPolicy < SimpleAuthorize::Policy
     else
       []
     end
-  end
-
-  def visible_attributes_for_index
-    if user&.admin?
-      %i[id title published]
-    else
-      %i[id title]
-    end
-  end
-
-  def visible_attributes_for_show
-    visible_attributes
   end
 
   def editable_attributes
@@ -124,28 +94,23 @@ class PostPolicy < SimpleAuthorize::Policy
       []
     end
   end
+end
 
-  def editable_attributes_for_create
-    if user&.admin?
-      %i[title body published]
-    elsif user&.contributor?
-      %i[title body]
-    else
-      []
-    end
+RSpec.configure do |config|
+  config.expect_with :rspec do |expectations|
+    expectations.include_chain_clauses_in_custom_matcher_descriptions = true
   end
 
-  def editable_attributes_for_update
-    editable_attributes
+  config.mock_with :rspec do |mocks|
+    mocks.verify_partial_doubles = true
   end
 
-  class Scope < SimpleAuthorize::Policy::Scope
-    def resolve
-      if user&.admin?
-        scope
-      else
-        scope.select(&:published)
-      end
-    end
-  end
+  config.shared_context_metadata_behavior = :apply_to_host_groups
+  config.filter_run_when_matching :focus
+  config.example_status_persistence_file_path = "spec/examples.txt"
+  config.disable_monkey_patching!
+  config.warnings = true
+  config.default_formatter = "doc" if config.files_to_run.one?
+  config.order = :random
+  Kernel.srand config.seed
 end
