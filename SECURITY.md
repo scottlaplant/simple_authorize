@@ -16,7 +16,6 @@ We take the security of SimpleAuthorize seriously. If you discover a security vu
 
 1. **DO NOT** open a public GitHub issue for security vulnerabilities
 2. Use GitHub's private vulnerability reporting feature (see "Security" tab in the repository)
-3. Or email security reports to: scottlaplant@gmail.com
 
 ### What to Include
 
@@ -72,6 +71,3 @@ When using SimpleAuthorize in your application:
 
 SimpleAuthorize has minimal dependencies (only Rails/ActiveSupport). We monitor our dependencies for security vulnerabilities and update promptly.
 
-## Questions?
-
-If you have questions about this security policy or SimpleAuthorize's security practices, please email scottlaplant@gmail.com.

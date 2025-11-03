@@ -379,6 +379,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Credits
 
-Created by Scott LaPlant
-
-Inspired by [Pundit](https://github.com/varvet/pundit) by Elabs
+SimpleAuthorize is heavily inspired by [Pundit](https://github.com/varvet/pundit) by Elabs. We're grateful to the Pundit team for pioneering this authorization pattern.
