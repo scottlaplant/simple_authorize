@@ -14,7 +14,7 @@ class TestController
     @action_name = "index"
     @current_user = nil
     @params = {}
-    @request = Struct.new(:referrer, :url).new(nil, "http://example.com/test")
+    @request = OpenStruct.new(referrer: nil, url: "http://example.com/test")
     @flash = {}
     @redirected_to = nil
     @redirect_status = nil
@@ -293,5 +293,426 @@ class ControllerTest < ActiveSupport::TestCase
   test "NotAuthorizedError accepts string message" do
     error = SimpleAuthorize::Controller::NotAuthorizedError.new("Custom message")
     assert_equal "Custom message", error.message
+  end
+
+  # Test user_not_authorized alias
+  test "user_not_authorized calls handle_unauthorized" do
+    @controller.user_not_authorized
+    assert_equal "/", @controller.redirected_to
+  end
+
+  # Test API detection
+  test "api_request? detects JSON format" do
+    @controller.request = OpenStruct.new(
+      format: OpenStruct.new(json?: true, xml?: false, html?: false),
+      headers: {}
+    )
+    assert @controller.api_request?
+  end
+
+  test "api_request? detects XML format" do
+    @controller.request = OpenStruct.new(
+      format: OpenStruct.new(json?: false, xml?: true, html?: false),
+      headers: {}
+    )
+    assert @controller.api_request?
+  end
+
+  test "api_request? detects JSON in Accept header" do
+    @controller.request = OpenStruct.new(
+      format: OpenStruct.new(json?: false, xml?: false, html?: true),
+      headers: {"Accept" => "application/json"}
+    )
+    assert @controller.api_request?
+  end
+
+  test "api_request? detects JSON in Content-Type header" do
+    @controller.request = OpenStruct.new(
+      format: OpenStruct.new(json?: false, xml?: false, html?: true),
+      headers: {"Content-Type" => "application/json"}
+    )
+    assert @controller.api_request?
+  end
+
+  test "api_request? returns false for HTML" do
+    @controller.request = OpenStruct.new(
+      format: OpenStruct.new(json?: false, xml?: false, html?: true),
+      headers: {}
+    )
+    refute @controller.api_request?
+  end
+
+  # Test safe_referrer_path edge cases
+  test "safe_referrer_path handles nil referrer" do
+    @controller.request.referrer = nil
+    assert_nil @controller.safe_referrer_path
+  end
+
+  test "safe_referrer_path handles invalid URI" do
+    @controller.request.referrer = "not a valid uri!!!"
+    assert_nil @controller.safe_referrer_path
+  end
+
+  # Test filter_attributes
+  test "filter_attributes returns only visible attributes" do
+    @controller.action_name = "show"
+    attributes = {id: 1, title: "Test", body: "Body", secret: "Secret"}
+    filtered = @controller.filter_attributes(@post, attributes)
+
+    # Admin can see id, title, body, published, user_id for show action
+    assert filtered.key?(:id)
+    assert filtered.key?(:title)
+    assert filtered.key?(:body)
+    refute filtered.key?(:secret)
+  end
+
+  test "filter_attributes respects role-based visibility" do
+    @controller.current_user = @viewer
+    @controller.action_name = "index"
+    attributes = {id: 1, title: "Test", body: "Body", user_id: 1, published: true}
+    filtered = @controller.filter_attributes(@post, attributes)
+
+    # For index action, viewer can't see body or user_id
+    assert filtered.key?(:id)
+    assert filtered.key?(:title)
+    refute filtered.key?(:user_id)
+  end
+
+  # Test policy_params
+  test "policy_params builds permitted params from policy" do
+    @controller.params = ActionController::Parameters.new({
+                                                             post: {title: "Test", body: "Body", secret: "Secret"}
+                                                           })
+
+    permitted = @controller.policy_params(@post)
+    assert_equal "Test", permitted[:title]
+    assert_equal "Body", permitted[:body]
+    refute permitted.key?(:secret)
+  end
+
+  test "policy_params accepts custom param key" do
+    @controller.params = ActionController::Parameters.new({
+                                                             article: {title: "Test", body: "Body"}
+                                                           })
+
+    permitted = @controller.policy_params(@post, :article)
+    assert_equal "Test", permitted[:title]
+  end
+
+  # Test api_error_response
+  test "api_error_response builds structured error response" do
+    response = @controller.api_error_response(message: "Custom error", status: 403)
+
+    assert_equal 403, response[:status]
+    assert_equal "application/json", response[:content_type]
+    assert_equal "not_authorized", response[:body][:error]
+    assert_equal "Custom error", response[:body][:message]
+  end
+
+  test "api_error_response includes optional details" do
+    response = @controller.api_error_response(
+      message: "Error",
+      status: 401,
+      details: {reason: "invalid_token"}
+    )
+
+    assert_equal 401, response[:status]
+    assert_equal({reason: "invalid_token"}, response[:body][:details])
+  end
+
+  # Test visible_attributes
+  test "visible_attributes returns policy visible attributes" do
+    @controller.action_name = "show"
+    attrs = @controller.visible_attributes(@post)
+    assert_equal %i[id title body published user_id], attrs
+  end
+
+  test "visible_attributes for specific action" do
+    attrs = @controller.visible_attributes(@post, :index)
+    assert_equal %i[id title published], attrs
+  end
+
+  # Test editable_attributes
+  test "editable_attributes returns policy editable attributes" do
+    attrs = @controller.editable_attributes(@post)
+    assert_equal %i[title body published], attrs
+  end
+
+  test "editable_attributes for specific action" do
+    attrs = @controller.editable_attributes(@post, :create)
+    assert_equal %i[title body published], attrs
+  end
+
+  # Test clear_policy_cache
+  test "clear_policy_cache clears cached policies" do
+    # Enable caching temporarily
+    original_cache_setting = SimpleAuthorize.configuration.enable_policy_cache
+    SimpleAuthorize.configuration.enable_policy_cache = true
+
+    @controller.policy(@post)
+    assert @controller.instance_variable_get(:@_policy_cache).present?
+
+    @controller.clear_policy_cache
+    assert_nil @controller.instance_variable_get(:@_policy_cache)
+  ensure
+    SimpleAuthorize.configuration.enable_policy_cache = original_cache_setting
+  end
+
+  # Test batch authorization
+  test "authorize_all authorizes all records" do
+    posts = [
+      Post.new(id: 1, user_id: 1),
+      Post.new(id: 2, user_id: 1)
+    ]
+
+    result = @controller.authorize_all(posts, :show?)
+    assert_equal posts, result
+    assert @controller.authorization_performed?
+  end
+
+  test "authorize_all raises on first unauthorized record" do
+    @controller.current_user = @viewer
+    posts = [
+      Post.new(id: 1, user_id: 1),
+      Post.new(id: 2, user_id: 1)
+    ]
+
+    assert_raises(SimpleAuthorize::Controller::NotAuthorizedError) do
+      @controller.authorize_all(posts, :update?)
+    end
+  end
+
+  test "authorized_records filters to only authorized records" do
+    posts = [
+      Post.new(id: 1, user_id: 1),
+      Post.new(id: 2, user_id: 2),
+      Post.new(id: 3, user_id: 3)
+    ]
+
+    # Viewer (id: 2) can only update their own post (id: 2, user_id: 2)
+    @controller.current_user = @viewer
+    authorized = @controller.authorized_records(posts, :update?)
+    assert_equal 1, authorized.length
+    assert_equal 2, authorized.first.id
+  end
+
+  test "partition_records splits authorized and unauthorized" do
+    posts = [
+      Post.new(id: 1, user_id: 1),
+      Post.new(id: 2, user_id: 2)
+    ]
+
+    @controller.current_user = @admin
+    authorized, unauthorized = @controller.partition_records(posts, :update?)
+    assert_equal 2, authorized.length
+    assert_empty unauthorized
+  end
+
+  # Test policy with namespace
+  test "policy accepts namespace parameter" do
+    # This tests the namespace path in the policy method
+    policy = @controller.policy(@post, namespace: nil)
+    assert_instance_of PostPolicy, policy
+  end
+
+  # Test handle_api_authorization_error
+  test "handle_api_authorization_error with authenticated user returns 403" do
+    error = SimpleAuthorize::Controller::NotAuthorizedError.new(
+      query: :update?,
+      record: @post,
+      policy: PostPolicy.new(@admin, @post)
+    )
+
+    response = @controller.handle_api_authorization_error(error)
+    assert_equal 403, response[:status]
+    assert_equal "application/json", response[:content_type]
+    assert_equal "not_authorized", response[:body][:error]
+  end
+
+  test "handle_api_authorization_error with nil user returns 401" do
+    @controller.current_user = nil
+    error = SimpleAuthorize::Controller::NotAuthorizedError.new(
+      query: :show?,
+      record: @post,
+      policy: PostPolicy.new(nil, @post)
+    )
+
+    response = @controller.handle_api_authorization_error(error)
+    assert_equal 401, response[:status]
+  end
+
+  test "handle_api_authorization_error includes details when configured" do
+    original_setting = SimpleAuthorize.configuration.api_error_details
+    SimpleAuthorize.configuration.api_error_details = true
+
+    error = SimpleAuthorize::Controller::NotAuthorizedError.new(
+      query: :update?,
+      record: @post,
+      policy: PostPolicy.new(@admin, @post)
+    )
+
+    response = @controller.handle_api_authorization_error(error)
+    assert_equal "update?", response[:body][:query]
+    assert_equal "Post", response[:body][:record_type]
+    assert_equal "PostPolicy", response[:body][:policy]
+  ensure
+    SimpleAuthorize.configuration.api_error_details = original_setting
+  end
+
+  # Test instrumentation
+  test "authorize emits instrumentation event when enabled" do
+    original_setting = SimpleAuthorize.configuration.enable_instrumentation
+    SimpleAuthorize.configuration.enable_instrumentation = true
+
+    events = []
+    subscriber = ActiveSupport::Notifications.subscribe("authorize.simple_authorize") do |*args|
+      event = ActiveSupport::Notifications::Event.new(*args)
+      events << event
+    end
+
+    @controller.authorize(@post, :show?)
+
+    assert_equal 1, events.length
+    event_payload = events.first.payload
+    assert_equal @admin, event_payload[:user]
+    assert_equal @post, event_payload[:record]
+    assert_equal "show?", event_payload[:query]
+    assert event_payload[:authorized]
+  ensure
+    ActiveSupport::Notifications.unsubscribe(subscriber)
+    SimpleAuthorize.configuration.enable_instrumentation = original_setting
+  end
+
+  test "policy_scope emits instrumentation event when enabled" do
+    original_setting = SimpleAuthorize.configuration.enable_instrumentation
+    SimpleAuthorize.configuration.enable_instrumentation = true
+
+    events = []
+    subscriber = ActiveSupport::Notifications.subscribe("policy_scope.simple_authorize") do |*args|
+      event = ActiveSupport::Notifications::Event.new(*args)
+      events << event
+    end
+
+    posts_relation = Struct.new(:posts) do
+      def model_name
+        Post.model_name
+      end
+    end.new([Post.new])
+
+    @controller.policy_scope(posts_relation)
+
+    assert_equal 1, events.length
+    event_payload = events.first.payload
+    assert_equal @admin, event_payload[:user]
+    assert_equal posts_relation, event_payload[:scope]
+  ensure
+    ActiveSupport::Notifications.unsubscribe(subscriber)
+    SimpleAuthorize.configuration.enable_instrumentation = original_setting
+  end
+
+  # Test policy caching with build_policy_cache_key
+  test "policy uses cache when caching is enabled" do
+    original_setting = SimpleAuthorize.configuration.enable_policy_cache
+    SimpleAuthorize.configuration.enable_policy_cache = true
+
+    policy1 = @controller.policy(@post)
+    policy2 = @controller.policy(@post)
+
+    # Should return same cached instance
+    assert_equal policy1.object_id, policy2.object_id
+
+    # Clear cache and get new instance
+    @controller.clear_policy_cache
+    policy3 = @controller.policy(@post)
+    refute_equal policy1.object_id, policy3.object_id
+  ensure
+    SimpleAuthorize.configuration.enable_policy_cache = original_setting
+  end
+
+  # Test NotAuthorizedError with I18n
+  test "NotAuthorizedError uses I18n default when no custom translation" do
+    original_setting = SimpleAuthorize.configuration.i18n_enabled
+    SimpleAuthorize.configuration.i18n_enabled = true
+
+    # Clear any existing translations
+    if defined?(I18n)
+      I18n.backend.store_translations(:en, {
+                                        simple_authorize: {
+                                          errors: {
+                                            not_authorized: "You are not authorized to perform this action"
+                                          }
+                                        }
+                                      })
+    end
+
+    # Use a query that doesn't have a custom translation
+    policy = PostPolicy.new(@viewer, @post)
+    error = SimpleAuthorize::Controller::NotAuthorizedError.new(
+      query: :publish?,
+      record: @post,
+      policy: policy
+    )
+
+    assert_includes error.message.downcase, "not authorized" if defined?(I18n)
+  ensure
+    SimpleAuthorize.configuration.i18n_enabled = original_setting
+  end
+
+  test "NotAuthorizedError with custom I18n translation" do
+    original_setting = SimpleAuthorize.configuration.i18n_enabled
+    SimpleAuthorize.configuration.i18n_enabled = true
+
+    if defined?(I18n)
+      I18n.backend.store_translations(:en, {
+                                        simple_authorize: {
+                                          policies: {
+                                            post_policy: {
+                                              update: {
+                                                denied: "Custom: Cannot update this post"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      })
+    end
+
+    policy = PostPolicy.new(@viewer, @post)
+    error = SimpleAuthorize::Controller::NotAuthorizedError.new(
+      query: :update?,
+      record: @post,
+      policy: policy
+    )
+
+    if defined?(I18n)
+      assert_equal "Custom: Cannot update this post", error.message
+    end
+  ensure
+    SimpleAuthorize.configuration.i18n_enabled = original_setting
+  end
+
+  # Test handle_unauthorized with API requests
+  test "handle_unauthorized renders JSON for API requests" do
+    @controller.request = OpenStruct.new(
+      format: OpenStruct.new(json?: true, xml?: false, html?: false),
+      headers: {}
+    )
+
+    # Mock render method
+    rendered = nil
+    @controller.define_singleton_method(:render) do |options|
+      rendered = options
+    end
+
+    error = SimpleAuthorize::Controller::NotAuthorizedError.new(
+      query: :update?,
+      record: @post,
+      policy: PostPolicy.new(@admin, @post)
+    )
+
+    @controller.handle_unauthorized(error)
+
+    assert rendered.present?
+    assert_equal 403, rendered[:status]
+    assert rendered[:json].present?
   end
 end

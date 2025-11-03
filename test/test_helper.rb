@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+# Start SimpleCov before anything else
+require "simplecov"
+SimpleCov.command_name "Minitest"
+
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 require "simple_authorize"
 
@@ -7,6 +11,8 @@ require "minitest/autorun"
 require "active_support"
 require "active_support/test_case"
 require "active_model"
+require "action_controller"
+require "ostruct"
 
 # Include test helpers in all test cases
 module ActiveSupport
@@ -56,6 +62,10 @@ class Post
 
   def self.model_name
     ActiveModel::Name.new(self, nil, "Post")
+  end
+
+  def model_name
+    self.class.model_name
   end
 end
 
