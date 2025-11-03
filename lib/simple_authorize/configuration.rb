@@ -21,6 +21,9 @@ module SimpleAuthorize
     # Enable instrumentation for authorization events (default: true)
     attr_accessor :enable_instrumentation
 
+    # Include detailed error information in API responses (default: false)
+    attr_accessor :api_error_details
+
     def initialize
       @default_error_message = "You are not authorized to perform this action."
       @auto_verify = false
@@ -28,6 +31,7 @@ module SimpleAuthorize
       @unauthorized_redirect_path = nil
       @enable_policy_cache = false
       @enable_instrumentation = true
+      @api_error_details = false
     end
   end
 

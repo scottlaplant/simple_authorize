@@ -255,6 +255,68 @@ module SimpleAuthorize
       handle_unauthorized(exception)
     end
 
+    # Check if current request is an API request (JSON/XML)
+    def api_request?
+      return false unless respond_to?(:request)
+
+      # Check request format
+      return true if request.respond_to?(:format) && (request.format.json? || request.format.xml?)
+
+      # Check Accept header
+      if request.respond_to?(:headers) && request.headers["Accept"]
+        accept = request.headers["Accept"].to_s
+        return true if accept.include?("application/json") || accept.include?("application/xml")
+      end
+
+      # Check Content-Type header
+      if request.respond_to?(:headers) && request.headers["Content-Type"]
+        content_type = request.headers["Content-Type"].to_s
+        return true if content_type.include?("application/json") || content_type.include?("application/xml")
+      end
+
+      false
+    end
+
+    # Handle API authorization errors with JSON response
+    def handle_api_authorization_error(exception)
+      status = exception.record.nil? || authorized_user.nil? ? 401 : 403
+      message = SimpleAuthorize.configuration.default_error_message
+
+      body = {
+        error: "not_authorized",
+        message: message
+      }
+
+      # Add detailed information if configured
+      if SimpleAuthorize.configuration.api_error_details
+        body[:query] = exception.query.to_s
+        body[:record_type] = exception.record&.class&.name
+        body[:policy] = exception.policy&.class&.name
+      end
+
+      {
+        status: status,
+        content_type: "application/json",
+        body: body
+      }
+    end
+
+    # Build an API error response
+    def api_error_response(message:, status: 403, details: nil)
+      body = {
+        error: "not_authorized",
+        message: message
+      }
+
+      body[:details] = details if details
+
+      {
+        status: status,
+        content_type: "application/json",
+        body: body
+      }
+    end
+
     protected
 
     # Build a cache key for a policy instance
@@ -367,7 +429,15 @@ module SimpleAuthorize
 
     # Handle authorization errors
     def handle_unauthorized(exception = nil)
-      flash[:alert] = "You are not authorized to perform this action."
+      # Handle API requests with JSON response
+      if api_request? && exception.is_a?(NotAuthorizedError)
+        response = handle_api_authorization_error(exception)
+        render json: response[:body], status: response[:status]
+        return
+      end
+
+      # Handle traditional HTML requests with redirect
+      flash[:alert] = SimpleAuthorize.configuration.default_error_message
       safe_redirect_path = safe_referrer_path || root_path
 
       if exception

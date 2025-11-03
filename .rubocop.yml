@@ -34,9 +34,18 @@ Metrics/AbcSize:
   Exclude:
     - 'lib/simple_authorize/controller.rb'
 
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - 'lib/simple_authorize/controller.rb'
+
 Metrics/PerceivedComplexity:
   Exclude:
     - 'lib/simple_authorize/controller.rb'
+
+# OpenStruct is fine for test mocks
+Style/OpenStructUse:
+  Exclude:
+    - 'test/**/*'
 
 # Development dependencies are fine in gemspec
 Gemspec/DevelopmentDependencies:
