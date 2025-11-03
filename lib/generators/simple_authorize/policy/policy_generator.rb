@@ -47,7 +47,7 @@ module SimpleAuthorize
         if class_path.empty?
           policy_class_name
         else
-          "#{class_path.map(&:camelize).join('::')}::#{policy_class_name}"
+          "#{class_path.map(&:camelize).join("::")}::#{policy_class_name}"
         end
       end
     end
