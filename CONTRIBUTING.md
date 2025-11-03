@@ -50,22 +50,42 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
    bundle install
    ```
 
-3. **Run tests**
+3. **Set up git hooks with Overcommit**
+   ```bash
+   # Install git hooks
+   bundle exec overcommit --install
+
+   # (Optional) Install TruffleHog for secret scanning
+   # macOS: brew install truffleHog
+   # Linux: pip install truffleHog
+   ```
+
+   This sets up automatic checks before commits and pushes:
+   * **Pre-commit**: RuboCop, trailing whitespace, YAML syntax
+   * **Pre-push**: RuboCop, Minitest, RSpec, TruffleHog (if installed)
+   * **Post-checkout**: Automatic bundle install
+
+   To skip hooks temporarily (not recommended):
+   ```bash
+   git push --no-verify
+   ```
+
+4. **Run tests**
    ```bash
    # Run Minitest suite
    bundle exec rake test
-   
+
    # Run RSpec suite
    bundle exec rspec
-   
+
    # Run RuboCop
    bundle exec rubocop
-   
+
    # Run all checks
    bundle exec rake
    ```
 
-4. **Create a feature branch**
+5. **Create a feature branch**
    ```bash
    git checkout -b my-new-feature
    ```

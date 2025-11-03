@@ -1,0 +1,58 @@
+# Overcommit configuration
+# See https://github.com/sds/overcommit for full documentation
+
+# Verify signatures for overcommit config to prevent tampering
+verify_signatures: true
+
+# Run these hooks before commits
+PreCommit:
+  RuboCop:
+    enabled: true
+    description: 'Checking code style with RuboCop'
+    required: true
+    quiet: false
+    command: ['bundle', 'exec', 'rubocop']
+
+  TrailingWhitespace:
+    enabled: true
+    description: 'Checking for trailing whitespace'
+
+  YamlSyntax:
+    enabled: true
+    description: 'Checking YAML syntax'
+
+# Run these hooks before pushes (more extensive checks)
+PrePush:
+  RuboCop:
+    enabled: true
+    description: 'Running RuboCop before push'
+    required: true
+    command: ['bundle', 'exec', 'rubocop']
+
+  Minitest:
+    enabled: true
+    description: 'Running Minitest suite'
+    required: true
+    command: ['bundle', 'exec', 'rake', 'test']
+
+  RSpec:
+    enabled: true
+    description: 'Running RSpec suite'
+    required: true
+    command: ['bundle', 'exec', 'rspec']
+
+  # TruffleHog - scan for secrets
+  # Note: Requires truffleHog to be installed
+  # Install: brew install truffleHog (macOS) or pip install truffleHog
+  CustomScript:
+    enabled: true
+    description: 'Scanning for secrets with TruffleHog'
+    required: false  # Optional since it requires external installation
+    command: ['sh', '-c', 'if command -v trufflehog >/dev/null 2>&1; then trufflehog filesystem . --only-verified --fail; else echo "TruffleHog not installed - skipping secret scan"; fi']
+
+# Run these hooks after checkout
+PostCheckout:
+  BundleInstall:
+    enabled: true
+    description: 'Running bundle install after checkout'
+    required: false

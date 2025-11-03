@@ -31,3 +31,22 @@ jobs:
           bundler-cache: true
       - name: Run the default task
         run: bundle exec rake
+
+  security:
+    runs-on: ubuntu-latest
+    name: Security Checks
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+      - name: Install bundler-audit
+        run: gem install bundler-audit
+      - name: Update vulnerability database
+        run: bundle audit --update
+      - name: Run bundler-audit
+        run: bundle audit check

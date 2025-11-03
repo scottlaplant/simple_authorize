@@ -11,3 +11,6 @@ gem "rake", "~> 13.3"
 gem "minitest", "~> 5.16"
 
 gem "rubocop", "~> 1.81"
+
+# Code quality and security
+gem "overcommit", "~> 0.64"
