@@ -4,18 +4,37 @@
 module <%= class_path.map(&:camelize).join('::') %>
 <% end -%>
   class <%= policy_class_name %> < ApplicationPolicy
+<% if include_modules? -%>
+<% module_comments.each do |comment| -%>
+    <%= comment %>
+<% end -%>
+<% policy_modules.each do |mod| -%>
+    include <%= mod %>
+<% end -%>
+
+    # The included modules provide default implementations for:
+    # - update? and destroy? (from Ownable - based on ownership)
+    # - publish?, unpublish?, schedule? (from Publishable)
+    # - show? (from Publishable - published-aware visibility)
+    #
+    # Override any of these methods below to customize behavior for this policy.
+
+<% end -%>
     def index?
       false
     end
 
+<% unless include_modules? -%>
     def show?
       false
     end
 
+<% end -%>
     def create?
       false
     end
 
+<% unless include_modules? -%>
     def update?
       false
     end
@@ -24,6 +43,7 @@ module <%= class_path.map(&:camelize).join('::') %>
       false
     end
 
+<% end -%>
     def permitted_attributes
       []
     end
