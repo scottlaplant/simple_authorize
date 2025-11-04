@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.9.37
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "README";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'>
+<h1 id="label-SimpleAuthorize">SimpleAuthorize</h1>
+
+<p><a href="https://rubygems.org/gems/simple_authorize"><img src="https://img.shields.io/gem/v/simple_authorize.svg" alt="Gem Version"></a> <a href="https://github.com/scottlaplant/simple_authorize/actions"><img src="https://github.com/scottlaplant/simple_authorize/workflows/Ruby/badge.svg" alt="Ruby"></a> <a href="https://rubygems.org/gems/simple_authorize"><img src="https://img.shields.io/gem/dt/simple_authorize.svg" alt="Downloads"></a></p>
+
+<p>SimpleAuthorize is a lightweight, powerful authorization framework for Rails that provides policy-based access control without external dependencies. Inspired by Pundit, it offers a clean API for managing permissions in your Rails applications.</p>
+
+<h2 id="label-Features">Features</h2>
+<ul><li>
+<p><strong>Policy-Based Authorization</strong> - Define authorization rules in dedicated policy classes</p>
+</li><li>
+<p><strong>Scope Filtering</strong> - Automatically filter collections based on user permissions</p>
+</li><li>
+<p><strong>Role-Based Access</strong> - Built-in support for role-based authorization</p>
+</li><li>
+<p><strong>Zero Dependencies</strong> - No external gems required (only Rails)</p>
+</li><li>
+<p><strong>Strong Parameters Integration</strong> - Automatically build permitted params from policies</p>
+</li><li>
+<p><strong>Test Friendly</strong> - Easy to test policies in isolation</p>
+</li><li>
+<p><strong>Rails Generators</strong> - Quickly scaffold policies for your models</p>
+</li></ul>
+
+<h2 id="label-Installation">Installation</h2>
+
+<p>Install the gem directly:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_gem'>gem</span> <span class='id identifier rubyid_install'>install</span> <span class='id identifier rubyid_simple_authorize'>simple_authorize</span>
+</code></pre>
+
+<p>Or add this line to your application’s Gemfile:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_gem'>gem</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>simple_authorize</span><span class='tstring_end'>&#39;</span></span>
+</code></pre>
+
+<p>Then execute:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_install'>install</span>
+</code></pre>
+
+<p>After installation, run the generator to set up your application:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_rails'>rails</span> <span class='id identifier rubyid_generate'>generate</span> <span class='label'>simple_authorize:</span><span class='id identifier rubyid_install'>install</span>
+</code></pre>
+
+<p>This will create: - <code>config/initializers/simple_authorize.rb</code> - Configuration file - <code>app/policies/application_policy.rb</code> - Base policy class</p>
+
+<h2 id="label-Quick+Start">Quick Start</h2>
+
+<h3 id="label-1.+Include+SimpleAuthorize+in+your+ApplicationController">1. Include SimpleAuthorize in your ApplicationController</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>ApplicationController</span> <span class='op'>&lt;</span> <span class='const'>ActionController</span><span class='op'>::</span><span class='const'>Base</span>
+  <span class='id identifier rubyid_include'>include</span> <span class='const'><span class='object_link'><a href="SimpleAuthorize.html" title="SimpleAuthorize (module)">SimpleAuthorize</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="SimpleAuthorize/Controller.html" title="SimpleAuthorize::Controller (module)">Controller</a></span></span>
+  <span class='id identifier rubyid_rescue_from_authorization_errors'>rescue_from_authorization_errors</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<h3 id="label-2.+Create+a+Policy">2. Create a Policy</h3>
+
+<p>Generate a policy for your model using the generator:</p>
+
+<pre class="code ruby"><code class="ruby">rails generate simple_authorize:policy Post
+</code></pre>
+
+<p>This creates: - <code>app/policies/post_policy.rb</code> - Policy class with CRUD methods - <code>test/policies/post_policy_test.rb</code> - Test file (or spec file with <code>--spec</code>)</p>
+
+<p>Or create a policy class manually in <code>app/policies/</code>:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># app/policies/post_policy.rb
+</span><span class='kw'>class</span> <span class='const'>PostPolicy</span> <span class='op'>&lt;</span> <span class='const'><span class='object_link'><a href="ApplicationPolicy.html" title="ApplicationPolicy (class)">ApplicationPolicy</a></span></span>
+  <span class='kw'>def</span> <span class='id identifier rubyid_index?'>index?</span>
+    <span class='kw'>true</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>def</span> <span class='id identifier rubyid_show?'>show?</span>
+    <span class='kw'>true</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>def</span> <span class='id identifier rubyid_create?'>create?</span>
+    <span class='id identifier rubyid_user'>user</span><span class='period'>.</span><span class='id identifier rubyid_present?'>present?</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>def</span> <span class='id identifier rubyid_update?'>update?</span>
+    <span class='id identifier rubyid_user'>user</span><span class='period'>.</span><span class='id identifier rubyid_present?'>present?</span> <span class='op'>&amp;&amp;</span> <span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='period'>.</span><span class='id identifier rubyid_user_id'>user_id</span> <span class='op'>==</span> <span class='id identifier rubyid_user'>user</span><span class='period'>.</span><span class='id identifier rubyid_id'>id</span> <span class='op'>||</span> <span class='id identifier rubyid_user'>user</span><span class='period'>.</span><span class='id identifier rubyid_admin?'>admin?</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>def</span> <span class='id identifier rubyid_destroy?'>destroy?</span>
+    <span class='id identifier rubyid_update?'>update?</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>class</span> <span class='const'>Scope</span> <span class='op'>&lt;</span> <span class='const'><span class='object_link'><a href="ApplicationPolicy.html" title="ApplicationPolicy (class)">ApplicationPolicy</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="ApplicationPolicy/Scope.html" title="ApplicationPolicy::Scope (class)">Scope</a></span></span>
+    <span class='kw'>def</span> <span class='id identifier rubyid_resolve'>resolve</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_user'>user</span><span class='op'>&amp;.</span><span class='id identifier rubyid_admin?'>admin?</span>
+        <span class='id identifier rubyid_scope'>scope</span><span class='period'>.</span><span class='id identifier rubyid_all'>all</span>
+      <span class='kw'>else</span>
+        <span class='id identifier rubyid_scope'>scope</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='label'>published:</span> <span class='kw'>true</span><span class='rparen'>)</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<h3 id="label-3.+Use+Authorization+in+Your+Controllers">3. Use Authorization in Your Controllers</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>PostsController</span> <span class='op'>&lt;</span> <span class='const'>ApplicationController</span>
+  <span class='kw'>def</span> <span class='id identifier rubyid_index'>index</span>
+    <span class='ivar'>@posts</span> <span class='op'>=</span> <span class='id identifier rubyid_policy_scope'>policy_scope</span><span class='lparen'>(</span><span class='const'>Post</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>def</span> <span class='id identifier rubyid_show'>show</span>
+    <span class='ivar'>@post</span> <span class='op'>=</span> <span class='const'>Post</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:id</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_authorize'>authorize</span> <span class='ivar'>@post</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>def</span> <span class='id identifier rubyid_create'>create</span>
+    <span class='ivar'>@post</span> <span class='op'>=</span> <span class='const'>Post</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_post_params'>post_params</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_authorize'>authorize</span> <span class='ivar'>@post</span>
+
+    <span class='kw'>if</span> <span class='ivar'>@post</span><span class='period'>.</span><span class='id identifier rubyid_save'>save</span>
+      <span class='id identifier rubyid_redirect_to'>redirect_to</span> <span class='ivar'>@post</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_render'>render</span> <span class='symbol'>:new</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_private'>private</span>
+
+  <span class='kw'>def</span> <span class='id identifier rubyid_post_params'>post_params</span>
+    <span class='id identifier rubyid_params'>params</span><span class='period'>.</span><span class='id identifier rubyid_require'>require</span><span class='lparen'>(</span><span class='symbol'>:post</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_permit'>permit</span><span class='lparen'>(</span><span class='symbol'>:title</span><span class='comma'>,</span> <span class='symbol'>:body</span><span class='comma'>,</span> <span class='symbol'>:published</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<h3 id="label-4.+Use+in+Views">4. Use in Views</h3>
+
+<p>Check permissions in your views:</p>
+
+<pre class="code ruby"><code class="ruby">&lt;% if policy(@post).update? %&gt;
+  &lt;%= link_to &quot;Edit&quot;, edit_post_path(@post) %&gt;
+&lt;% end %&gt;
+
+&lt;% if policy(@post).destroy? %&gt;
+  &lt;%= link_to &quot;Delete&quot;, post_path(@post), method: :delete %&gt;
+&lt;% end %&gt;
+</code></pre>
+
+<h2 id="label-Core+Concepts">Core Concepts</h2>
+
+<h3 id="label-Policies">Policies</h3>
+
+<p>Policies are plain Ruby objects that encapsulate authorization logic. Each policy corresponds to a model and defines what actions users can perform.</p>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>PostPolicy</span> <span class='op'>&lt;</span> <span class='const'><span class='object_link'><a href="ApplicationPolicy.html" title="ApplicationPolicy (class)">ApplicationPolicy</a></span></span>
+  <span class='kw'>def</span> <span class='id identifier rubyid_update?'>update?</span>
+    <span class='comment'># Only the owner or an admin can update
+</span>    <span class='id identifier rubyid_user'>user</span><span class='period'>.</span><span class='id identifier rubyid_present?'>present?</span> <span class='op'>&amp;&amp;</span> <span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='period'>.</span><span class='id identifier rubyid_user_id'>user_id</span> <span class='op'>==</span> <span class='id identifier rubyid_user'>user</span><span class='period'>.</span><span class='id identifier rubyid_id'>id</span> <span class='op'>||</span> <span class='id identifier rubyid_user'>user</span><span class='period'>.</span><span class='id identifier rubyid_admin?'>admin?</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<h3 id="label-Scopes">Scopes</h3>
+
+<p>Scopes filter collections based on user permissions:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>PostPolicy</span> <span class='op'>&lt;</span> <span class='const'><span class='object_link'><a href="ApplicationPolicy.html" title="ApplicationPolicy (class)">ApplicationPolicy</a></span></span>
+  <span class='kw'>class</span> <span class='const'>Scope</span> <span class='op'>&lt;</span> <span class='const'><span class='object_link'><a href="ApplicationPolicy.html" title="ApplicationPolicy (class)">ApplicationPolicy</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="ApplicationPolicy/Scope.html" title="ApplicationPolicy::Scope (class)">Scope</a></span></span>
+    <span class='kw'>def</span> <span class='id identifier rubyid_resolve'>resolve</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_user'>user</span><span class='op'>&amp;.</span><span class='id identifier rubyid_admin?'>admin?</span>
+        <span class='id identifier rubyid_scope'>scope</span><span class='period'>.</span><span class='id identifier rubyid_all'>all</span>
+      <span class='kw'>else</span>
+        <span class='id identifier rubyid_scope'>scope</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='label'>published:</span> <span class='kw'>true</span><span class='rparen'>)</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<p>Use in controllers:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>def</span> <span class='id identifier rubyid_index'>index</span>
+  <span class='ivar'>@posts</span> <span class='op'>=</span> <span class='id identifier rubyid_policy_scope'>policy_scope</span><span class='lparen'>(</span><span class='const'>Post</span><span class='rparen'>)</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<h3 id="label-Strong+Parameters">Strong Parameters</h3>
+
+<p>SimpleAuthorize can automatically build permitted parameters from policies:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>PostPolicy</span> <span class='op'>&lt;</span> <span class='const'><span class='object_link'><a href="ApplicationPolicy.html" title="ApplicationPolicy (class)">ApplicationPolicy</a></span></span>
+  <span class='kw'>def</span> <span class='id identifier rubyid_permitted_attributes'>permitted_attributes</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_user'>user</span><span class='op'>&amp;.</span><span class='id identifier rubyid_admin?'>admin?</span>
+      <span class='lbracket'>[</span><span class='symbol'>:title</span><span class='comma'>,</span> <span class='symbol'>:body</span><span class='comma'>,</span> <span class='symbol'>:published</span><span class='comma'>,</span> <span class='symbol'>:featured</span><span class='rbracket'>]</span>
+    <span class='kw'>else</span>
+      <span class='lbracket'>[</span><span class='symbol'>:title</span><span class='comma'>,</span> <span class='symbol'>:body</span><span class='rbracket'>]</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<p>Use in controllers:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>def</span> <span class='id identifier rubyid_post_params'>post_params</span>
+  <span class='id identifier rubyid_policy_params'>policy_params</span><span class='lparen'>(</span><span class='const'>Post</span><span class='comma'>,</span> <span class='symbol'>:post</span><span class='rparen'>)</span>
+  <span class='comment'># Or manually:
+</span>  <span class='comment'># params.require(:post).permit(*permitted_attributes(Post.new))
+</span><span class='kw'>end</span>
+</code></pre>
+
+<h2 id="label-Generators">Generators</h2>
+
+<p>SimpleAuthorize provides Rails generators to quickly scaffold policies:</p>
+
+<h3 id="label-Install+Generator">Install Generator</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_rails'>rails</span> <span class='id identifier rubyid_generate'>generate</span> <span class='label'>simple_authorize:</span><span class='id identifier rubyid_install'>install</span>
+</code></pre>
+
+<p>Creates: - <code>config/initializers/simple_authorize.rb</code> - Configuration file - <code>app/policies/application_policy.rb</code> - Base policy class</p>
+
+<h3 id="label-Policy+Generator">Policy Generator</h3>
+
+<pre class="code ruby"><code class="ruby">rails generate simple_authorize:policy Post
+</code></pre>
+
+<p>Creates: - <code>app/policies/post_policy.rb</code> - Policy with CRUD methods and scope - <code>test/policies/post_policy_test.rb</code> - Minitest tests</p>
+
+<p><strong>Options:</strong> - <code>--spec</code> - Generate RSpec tests instead of Minitest - <code>--skip-test</code> - Skip test file generation</p>
+
+<p><strong>Examples:</strong></p>
+
+<pre class="code ruby"><code class="ruby"># Generate policy with RSpec tests
+rails generate simple_authorize:policy Post --spec
+
+# Generate policy without tests
+rails generate simple_authorize:policy Post --skip-test
+
+# Generate namespaced policy
+rails generate simple_authorize:policy Admin::Post
+</code></pre>
+
+<h2 id="label-Configuration">Configuration</h2>
+
+<p>SimpleAuthorize can be configured in <code>config/initializers/simple_authorize.rb</code>:</p>
+
+<h3 id="label-Policy+Caching">Policy Caching</h3>
+
+<p>Enable policy caching to improve performance by caching policy instances per request:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='const'><span class='object_link'><a href="SimpleAuthorize.html" title="SimpleAuthorize (module)">SimpleAuthorize</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure'><span class='object_link'><a href="SimpleAuthorize.html#configure-class_method" title="SimpleAuthorize.configure (method)">configure</a></span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_config'>config</span><span class='op'>|</span>
+  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_enable_policy_cache'>enable_policy_cache</span> <span class='op'>=</span> <span class='kw'>true</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<p><strong>How it works:</strong> - Policy instances are cached for the duration of a single request - Cache is automatically scoped by user, record, and policy class - Each unique combination gets its own cached instance - Cache is automatically cleared between requests - Particularly useful in views where the same policy may be checked multiple times</p>
+
+<p><strong>Example performance impact:</strong></p>
+
+<pre class="code ruby"><code class="ruby">&lt;!-- Without caching: Creates 3 separate PostPolicy instances --&gt;
+&lt;% if policy(@post).update? %&gt;
+  &lt;%= link_to &quot;Edit&quot;, edit_post_path(@post) %&gt;
+&lt;% end %&gt;
+&lt;% if policy(@post).destroy? %&gt;
+  &lt;%= link_to &quot;Delete&quot;, post_path(@post) %&gt;
+&lt;% end %&gt;
+&lt;% if policy(@post).publish? %&gt;
+  &lt;%= link_to &quot;Publish&quot;, publish_post_path(@post) %&gt;
+&lt;% end %&gt;
+
+&lt;!-- With caching: Reuses the same PostPolicy instance --&gt;
+</code></pre>
+
+<p><strong>Testing:</strong> Use <code>clear_policy_cache</code> or <code>reset_authorization</code> to clear the cache in tests:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_test'>test</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>multiple checks use cached policy</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
+  <span class='const'><span class='object_link'><a href="SimpleAuthorize.html" title="SimpleAuthorize (module)">SimpleAuthorize</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure'><span class='object_link'><a href="SimpleAuthorize.html#configure-class_method" title="SimpleAuthorize.configure (method)">configure</a></span></span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_config'>config</span><span class='op'>|</span> <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_enable_policy_cache'>enable_policy_cache</span> <span class='op'>=</span> <span class='kw'>true</span> <span class='rbrace'>}</span>
+
+  <span class='id identifier rubyid_policy1'>policy1</span> <span class='op'>=</span> <span class='id identifier rubyid_policy'>policy</span><span class='lparen'>(</span><span class='ivar'>@post</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_policy2'>policy2</span> <span class='op'>=</span> <span class='id identifier rubyid_policy'>policy</span><span class='lparen'>(</span><span class='ivar'>@post</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_assert_same'>assert_same</span> <span class='id identifier rubyid_policy1'>policy1</span><span class='comma'>,</span> <span class='id identifier rubyid_policy2'>policy2</span>  <span class='comment'># Same instance
+</span>
+  <span class='id identifier rubyid_clear_policy_cache'>clear_policy_cache</span>
+  <span class='id identifier rubyid_policy3'>policy3</span> <span class='op'>=</span> <span class='id identifier rubyid_policy'>policy</span><span class='lparen'>(</span><span class='ivar'>@post</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_refute_same'>refute_same</span> <span class='id identifier rubyid_policy1'>policy1</span><span class='comma'>,</span> <span class='id identifier rubyid_policy3'>policy3</span>  <span class='comment'># New instance after clearing
+</span><span class='kw'>end</span>
+</code></pre>
+
+<h3 id="label-Instrumentation+-26+Audit+Logging">Instrumentation &amp; Audit Logging</h3>
+
+<p>SimpleAuthorize emits <code>ActiveSupport::Notifications</code> events for all authorization checks, perfect for security auditing, debugging, and monitoring:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Subscribe to authorization events
+</span><span class='const'>ActiveSupport</span><span class='op'>::</span><span class='const'>Notifications</span><span class='period'>.</span><span class='id identifier rubyid_subscribe'>subscribe</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>authorize.simple_authorize</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_start'>start</span><span class='comma'>,</span> <span class='id identifier rubyid_finish'>finish</span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='comma'>,</span> <span class='id identifier rubyid_payload'>payload</span><span class='op'>|</span>
+  <span class='id identifier rubyid_duration'>duration</span> <span class='op'>=</span> <span class='id identifier rubyid_finish'>finish</span> <span class='op'>-</span> <span class='id identifier rubyid_start'>start</span>
+
+  <span class='const'>Rails</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span><span class='lparen'>(</span><span class='lbrace'>{</span>
+    <span class='label'>event:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>authorization</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+    <span class='label'>user_id:</span> <span class='id identifier rubyid_payload'>payload</span><span class='lbracket'>[</span><span class='symbol'>:user_id</span><span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='label'>action:</span> <span class='id identifier rubyid_payload'>payload</span><span class='lbracket'>[</span><span class='symbol'>:query</span><span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='label'>resource:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_payload'>payload</span><span class='lbracket'>[</span><span class='symbol'>:record_class</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>#</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_payload'>payload</span><span class='lbracket'>[</span><span class='symbol'>:record_id</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+    <span class='label'>authorized:</span> <span class='id identifier rubyid_payload'>payload</span><span class='lbracket'>[</span><span class='symbol'>:authorized</span><span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='label'>duration_ms:</span> <span class='lparen'>(</span><span class='id identifier rubyid_duration'>duration</span> <span class='op'>*</span> <span class='int'>1000</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_round'>round</span><span class='lparen'>(</span><span class='int'>2</span><span class='rparen'>)</span>
+  <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='rparen'>)</span>
+<span class='kw'>end</span>
+
+<span class='comment'># Subscribe to policy scope events
+</span><span class='const'>ActiveSupport</span><span class='op'>::</span><span class='const'>Notifications</span><span class='period'>.</span><span class='id identifier rubyid_subscribe'>subscribe</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>policy_scope.simple_authorize</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_start'>start</span><span class='comma'>,</span> <span class='id identifier rubyid_finish'>finish</span><span class='comma'>,</span> <span class='id identifier rubyid_id'>id</span><span class='comma'>,</span> <span class='id identifier rubyid_payload'>payload</span><span class='op'>|</span>
+  <span class='const'>Rails</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Policy scope applied for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_payload'>payload</span><span class='lbracket'>[</span><span class='symbol'>:scope</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'> by user </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_payload'>payload</span><span class='lbracket'>[</span><span class='symbol'>:user_id</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<p><strong>Event Payloads:</strong></p>
+
+<p>Authorization events (<code>authorize.simple_authorize</code>): - <code>user</code>: Current user object - <code>user_id</code>: User ID - <code>record</code>: The record being authorized - <code>record_id</code>: Record ID - <code>record_class</code>: Record class name - <code>query</code>: Authorization method called (e.g., “update?”) - <code>policy_class</code>: Policy class used - <code>authorized</code>: Boolean result - <code>error</code>: Exception if authorization failed - <code>controller</code>: Controller name (if available) - <code>action</code>: Action name (if available)</p>
+
+<p>Policy scope events (<code>policy_scope.simple_authorize</code>): - <code>user</code>: Current user object - <code>user_id</code>: User ID - <code>scope</code>: The scope being filtered - <code>policy_scope_class</code>: Scope class used - <code>error</code>: Exception if scope failed - <code>controller</code>: Controller name (if available) - <code>action</code>: Action name (if available)</p>
+
+<p><strong>Use Cases:</strong> - Security auditing and compliance - Debugging authorization issues - Monitoring authorization performance - Sending failed authorization attempts to security services - Tracking which users access sensitive resources</p>
+
+<p><strong>Disable instrumentation</strong> (if needed for performance in specific scenarios):</p>
+
+<pre class="code ruby"><code class="ruby"><span class='const'><span class='object_link'><a href="SimpleAuthorize.html" title="SimpleAuthorize (module)">SimpleAuthorize</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure'><span class='object_link'><a href="SimpleAuthorize.html#configure-class_method" title="SimpleAuthorize.configure (method)">configure</a></span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_config'>config</span><span class='op'>|</span>
+  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_enable_instrumentation'>enable_instrumentation</span> <span class='op'>=</span> <span class='kw'>false</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<h3 id="label-Other+Configuration+Options">Other Configuration Options</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='const'><span class='object_link'><a href="SimpleAuthorize.html" title="SimpleAuthorize (module)">SimpleAuthorize</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure'><span class='object_link'><a href="SimpleAuthorize.html#configure-class_method" title="SimpleAuthorize.configure (method)">configure</a></span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_config'>config</span><span class='op'>|</span>
+  <span class='comment'># Custom error message for unauthorized access
+</span>  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_default_error_message'>default_error_message</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Access denied!</span><span class='tstring_end'>&quot;</span></span>
+
+  <span class='comment'># Custom redirect path for unauthorized users
+</span>  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_unauthorized_redirect_path'>unauthorized_redirect_path</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/access-denied</span><span class='tstring_end'>&quot;</span></span>
+
+  <span class='comment'># Custom method to get current user (default: current_user)
+</span>  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_current_user_method'>current_user_method</span> <span class='op'>=</span> <span class='symbol'>:authenticated_user</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<h2 id="label-Advanced+Features">Advanced Features</h2>
+
+<h3 id="label-Headless+Policies">Headless Policies</h3>
+
+<p>For policies that don’t correspond to a model:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>DashboardPolicy</span> <span class='op'>&lt;</span> <span class='const'><span class='object_link'><a href="ApplicationPolicy.html" title="ApplicationPolicy (class)">ApplicationPolicy</a></span></span>
+  <span class='kw'>def</span> <span class='id identifier rubyid_show?'>show?</span>
+    <span class='id identifier rubyid_user'>user</span><span class='op'>&amp;.</span><span class='id identifier rubyid_admin?'>admin?</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span>
+
+<span class='comment'># In controller:
+</span><span class='kw'>def</span> <span class='id identifier rubyid_show'>show</span>
+  <span class='id identifier rubyid_authorize_headless'>authorize_headless</span><span class='lparen'>(</span><span class='const'>DashboardPolicy</span><span class='rparen'>)</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<h3 id="label-Custom+Query+Methods">Custom Query Methods</h3>
+
+<p>Define custom authorization queries:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>PostPolicy</span> <span class='op'>&lt;</span> <span class='const'><span class='object_link'><a href="ApplicationPolicy.html" title="ApplicationPolicy (class)">ApplicationPolicy</a></span></span>
+  <span class='kw'>def</span> <span class='id identifier rubyid_publish?'>publish?</span>
+    <span class='id identifier rubyid_user'>user</span><span class='op'>&amp;.</span><span class='id identifier rubyid_admin?'>admin?</span> <span class='op'>||</span> <span class='lparen'>(</span><span class='id identifier rubyid_user'>user</span><span class='op'>&amp;.</span><span class='id identifier rubyid_contributor?'>contributor?</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_owner?'>owner?</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span>
+
+<span class='comment'># In controller:
+</span><span class='id identifier rubyid_authorize'>authorize</span> <span class='ivar'>@post</span><span class='comma'>,</span> <span class='symbol'>:publish?</span>
+</code></pre>
+
+<h3 id="label-Automatic+Verification">Automatic Verification</h3>
+
+<p>Ensure every action is authorized:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>ApplicationController</span> <span class='op'>&lt;</span> <span class='const'>ActionController</span><span class='op'>::</span><span class='const'>Base</span>
+  <span class='id identifier rubyid_include'>include</span> <span class='const'><span class='object_link'><a href="SimpleAuthorize.html" title="SimpleAuthorize (module)">SimpleAuthorize</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="SimpleAuthorize/Controller.html" title="SimpleAuthorize::Controller (module)">Controller</a></span></span>
+  <span class='id identifier rubyid_include'>include</span> <span class='const'><span class='object_link'><a href="SimpleAuthorize.html" title="SimpleAuthorize (module)">SimpleAuthorize</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="SimpleAuthorize/Controller.html" title="SimpleAuthorize::Controller (module)">Controller</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="SimpleAuthorize/Controller/AutoVerify.html" title="SimpleAuthorize::Controller::AutoVerify (module)">AutoVerify</a></span></span>  <span class='comment'># Enable auto-verification
+</span>  <span class='id identifier rubyid_rescue_from_authorization_errors'>rescue_from_authorization_errors</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<p>This will require <code>authorize</code> or <code>policy_scope</code> in all actions.</p>
+
+<p>Skip verification when needed:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>PublicController</span> <span class='op'>&lt;</span> <span class='const'>ApplicationController</span>
+  <span class='id identifier rubyid_skip_authorization_check'>skip_authorization_check</span> <span class='symbol'>:index</span><span class='comma'>,</span> <span class='symbol'>:show</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<h2 id="label-Testing">Testing</h2>
+
+<p>Test policies in isolation:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>test_helper</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='kw'>class</span> <span class='const'>PostPolicyTest</span> <span class='op'>&lt;</span> <span class='const'>ActiveSupport</span><span class='op'>::</span><span class='const'>TestCase</span>
+  <span class='id identifier rubyid_test'>test</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>admin can update any post</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_admin'>admin</span> <span class='op'>=</span> <span class='id identifier rubyid_users'>users</span><span class='lparen'>(</span><span class='symbol'>:admin</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_post'>post</span> <span class='op'>=</span> <span class='id identifier rubyid_posts'>posts</span><span class='lparen'>(</span><span class='symbol'>:one</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_policy'>policy</span> <span class='op'>=</span> <span class='const'>PostPolicy</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_admin'>admin</span><span class='comma'>,</span> <span class='id identifier rubyid_post'>post</span><span class='rparen'>)</span>
+
+    <span class='id identifier rubyid_assert'>assert</span> <span class='id identifier rubyid_policy'>policy</span><span class='period'>.</span><span class='id identifier rubyid_update?'>update?</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_test'>test</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>user can only update their own posts</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_user'>user</span> <span class='op'>=</span> <span class='id identifier rubyid_users'>users</span><span class='lparen'>(</span><span class='symbol'>:regular</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_own_post'>own_post</span> <span class='op'>=</span> <span class='id identifier rubyid_posts'>posts</span><span class='lparen'>(</span><span class='symbol'>:user_post</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_other_post'>other_post</span> <span class='op'>=</span> <span class='id identifier rubyid_posts'>posts</span><span class='lparen'>(</span><span class='symbol'>:other_post</span><span class='rparen'>)</span>
+
+    <span class='id identifier rubyid_assert'>assert</span> <span class='const'>PostPolicy</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_own_post'>own_post</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_update?'>update?</span>
+    <span class='id identifier rubyid_refute'>refute</span> <span class='const'>PostPolicy</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_other_post'>other_post</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_update?'>update?</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<h2 id="label-Development">Development</h2>
+
+<p>After checking out the repo, run <code>bin/setup</code> to install dependencies. Then, run <code>rake test</code> to run the tests. You can also run <code>bin/console</code> for an interactive prompt that will allow you to experiment.</p>
+
+<p>To install this gem onto your local machine, run <code>bundle exec rake install</code>.</p>
+
+<h2 id="label-Comparison+with+Pundit">Comparison with Pundit</h2>
+
+<p>SimpleAuthorize is heavily inspired by Pundit and offers a similar API. Key differences:</p>
+
+<table role="table">
+<thead>
+<tr>
+<th>Feature</th>
+<th>SimpleAuthorize</th>
+<th>Pundit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dependencies</td>
+<td>None (Rails only)</td>
+<td>Standalone gem</td>
+</tr>
+<tr>
+<td>Base class</td>
+<td><code>SimpleAuthorize::Policy</code></td>
+<td><code>ApplicationPolicy</code> (user-defined)</td>
+</tr>
+<tr>
+<td>Installation</td>
+<td>Generator creates base policy</td>
+<td>Manual setup required</td>
+</tr>
+<tr>
+<td>Module name</td>
+<td><code>SimpleAuthorize::Controller</code></td>
+<td><code>Pundit</code></td>
+</tr>
+<tr>
+<td>Compatibility</td>
+<td>Rails 6.0+</td>
+<td>Rails 4.0+</td>
+</tr>
+</tbody>
+</table>
+
+<p>Migration from Pundit is straightforward - most code will work with minimal changes.</p>
+
+<h2 id="label-Contributing">Contributing</h2>
+
+<p>Bug reports and pull requests are welcome on GitHub at <a href="https://github.com/scottlaplant/simple_authorize">github.com/scottlaplant/simple_authorize</a>.</p>
+<ol><li>
+<p>Fork it</p>
+</li><li>
+<p>Create your feature branch (<code>git checkout -b my-new-feature</code>)</p>
+</li><li>
+<p>Commit your changes (<code>git commit -am &#39;Add some feature&#39;</code>)</p>
+</li><li>
+<p>Push to the branch (<code>git push origin my-new-feature</code>)</p>
+</li><li>
+<p>Create new Pull Request</p>
+</li></ol>
+
+<h2 id="label-License">License</h2>
+
+<p>The gem is available as open source under the terms of the <a href="https://opensource.org/licenses/MIT">MIT License</a>.</p>
+
+<h2 id="label-Credits">Credits</h2>
+
+<p>SimpleAuthorize is heavily inspired by <a href="https://github.com/varvet/pundit">Pundit</a> by Elabs. We’re grateful to the Pundit team for pioneering this authorization pattern.</p>
+</div></div>
+
+      <div id="footer">
+  Generated on Tue Nov  4 21:47:28 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.3.6).
+</div>
+
+    </div>
+  </body>
+</html>

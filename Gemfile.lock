@@ -245,6 +245,7 @@ GEM
       base64
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    yard (0.9.37)
     zeitwerk (2.7.3)
 
 PLATFORMS
@@ -260,6 +261,7 @@ DEPENDENCIES
   rspec (~> 3.0)
   rubocop (~> 1.81)
   simple_authorize!
+  yard (~> 0.9)
 
 BUNDLED WITH
    2.7.1

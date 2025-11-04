@@ -1,12 +1,50 @@
 # frozen_string_literal: true
 
 module SimpleAuthorize
-  # Enhanced authorization system with full feature parity
-  # Provides comprehensive authorization without external dependencies
+  # Controller integration for SimpleAuthorize authorization system.
+  #
+  # Include this module in your ApplicationController to add authorization
+  # capabilities to your Rails application. Provides methods for authorizing
+  # actions, filtering scopes, managing attributes, and handling errors.
+  #
+  # @example Basic setup
+  #   class ApplicationController < ActionController::Base
+  #     include SimpleAuthorize::Controller
+  #     rescue_from_authorization_errors
+  #   end
+  #
+  # @example In a controller action
+  #   def update
+  #     @post = Post.find(params[:id])
+  #     authorize @post
+  #     if @post.update(policy_params(@post))
+  #       redirect_to @post
+  #     else
+  #       render :edit
+  #     end
+  #   end
+  #
+  # @example With scoping
+  #   def index
+  #     @posts = policy_scope(Post)
+  #   end
+  #
+  # @see SimpleAuthorize::Policy For policy implementation
   module Controller
     extend ActiveSupport::Concern
 
-    # Custom error classes for authorization
+    # Exception raised when a user is not authorized to perform an action.
+    #
+    # This error includes information about the query method, record, and policy
+    # that was used. It supports I18n for custom error messages.
+    #
+    # @example Rescuing authorization errors
+    #   rescue_from SimpleAuthorize::Controller::NotAuthorizedError, with: :user_not_authorized
+    #
+    #   def user_not_authorized(exception)
+    #     flash[:alert] = exception.message
+    #     redirect_to root_path
+    #   end
     class NotAuthorizedError < StandardError
       attr_reader :query, :record, :policy
 
@@ -82,9 +120,28 @@ module SimpleAuthorize
       end
     end
 
+    # Exception raised when a policy class cannot be found for a record.
+    #
+    # @example
+    #   authorize @post  # raises if PostPolicy doesn't exist
     class PolicyNotDefinedError < StandardError; end
+
+    # Exception raised when an action completes without calling {#authorize}.
+    #
+    # Only raised when using {AutoVerify} module or calling {#verify_authorized}.
+    #
+    # @see AutoVerify
+    # @see #verify_authorized
     class AuthorizationNotPerformedError < StandardError; end
+
+    # Exception raised when an index action completes without calling {#policy_scope}.
+    #
+    # Only raised when using {AutoVerify} module or calling {#verify_policy_scoped}.
+    #
+    # @see AutoVerify
+    # @see #verify_policy_scoped
     class PolicyScopingNotPerformedError < StandardError; end
+
     # Alias for backwards compatibility
     ScopingNotPerformedError = PolicyScopingNotPerformedError
 
@@ -93,7 +150,22 @@ module SimpleAuthorize
       helper_method :policy, :policy_scope, :authorized_user if respond_to?(:helper_method)
     end
 
-    # Module to enable automatic verification - opt-in for safety
+    # Automatic verification module to ensure all actions are authorized.
+    #
+    # Include this module to automatically verify that every controller action
+    # calls either {#authorize} or {#policy_scope}. Helps prevent accidentally
+    # forgetting to authorize actions.
+    #
+    # @example Enable auto-verification
+    #   class ApplicationController < ActionController::Base
+    #     include SimpleAuthorize::Controller
+    #     include SimpleAuthorize::Controller::AutoVerify
+    #   end
+    #
+    # @example Skip verification for specific actions
+    #   class PostsController < ApplicationController
+    #     skip_authorization_check only: [:public_index]
+    #   end
     module AutoVerify
       extend ActiveSupport::Concern
 
@@ -104,8 +176,44 @@ module SimpleAuthorize
       end
     end
 
-    # Core authorization methods
+    # @!group Core Authorization Methods
 
+    # Authorize an action on a record.
+    #
+    # Checks if the current user is authorized to perform the specified action
+    # on the given record. Raises {NotAuthorizedError} if not authorized.
+    #
+    # @param record [Object] the record to authorize (e.g., Post, Comment)
+    # @param query [String, Symbol, nil] the policy method to call (e.g., :update?, :destroy?)
+    #   Defaults to "#{action_name}?" if not provided
+    # @param policy_class [Class, nil] optional policy class to use instead of auto-detected
+    #
+    # @return [Object] the record that was authorized
+    #
+    # @raise [NotAuthorizedError] if user is not authorized
+    # @raise [PolicyNotDefinedError] if policy class cannot be found
+    #
+    # @example Basic usage
+    #   def update
+    #     @post = Post.find(params[:id])
+    #     authorize @post  # Calls PostPolicy.new(current_user, @post).update?
+    #     @post.update(post_params)
+    #   end
+    #
+    # @example With explicit query
+    #   def publish
+    #     @post = Post.find(params[:id])
+    #     authorize @post, :publish?  # Calls PostPolicy#publish?
+    #   end
+    #
+    # @example With custom policy class
+    #   def update
+    #     @post = Post.find(params[:id])
+    #     authorize @post, policy_class: AdminPostPolicy
+    #   end
+    #
+    # @see #authorize!
+    # @see #policy
     def authorize(record, query = nil, policy_class: nil)
       query ||= "#{action_name}?"
       @_policy = policy(record, policy_class: policy_class)
@@ -124,12 +232,47 @@ module SimpleAuthorize
       record
     end
 
-    # Authorize and raise exception if not authorized
+    # Alias for {#authorize} - explicitly raises exception if not authorized.
+    #
+    # Behaves identically to {#authorize}, always raising an exception if
+    # authorization fails. Provided for API clarity.
+    #
+    # @param (see #authorize)
+    # @return (see #authorize)
+    # @raise (see #authorize)
+    #
+    # @see #authorize
     def authorize!(record, query = nil, policy_class: nil)
       authorize(record, query, policy_class: policy_class)
     end
 
-    # Get or instantiate policy for a record
+    # Get or instantiate a policy for a record.
+    #
+    # Returns the policy instance for the given record. Policies are cached
+    # per-request if {Configuration#enable_policy_cache} is enabled.
+    # Available as a helper method in views.
+    #
+    # @param record [Object] the record to get a policy for
+    # @param policy_class [Class, nil] optional policy class to use
+    # @param namespace [Symbol, nil] optional namespace for namespaced policies
+    #
+    # @return [SimpleAuthorize::Policy] the policy instance
+    #
+    # @raise [PolicyNotDefinedError] if policy class cannot be found
+    #
+    # @example In controller
+    #   @post = Post.find(params[:id])
+    #   policy(@post).update?  # => true or false
+    #
+    # @example In view
+    #   <% if policy(@post).update? %>
+    #     <%= link_to "Edit", edit_post_path(@post) %>
+    #   <% end %>
+    #
+    # @example With custom policy class
+    #   policy(@post, policy_class: AdminPostPolicy)
+    #
+    # @see #authorize
     def policy(record, policy_class: nil, namespace: nil)
       policy_class ||= if namespace
                          policy_class_for(record, namespace: namespace)
@@ -149,12 +292,46 @@ module SimpleAuthorize
       raise PolicyNotDefinedError, "unable to find policy `#{policy_class}` for `#{record}`"
     end
 
-    # Ensure policy exists, raising if not found
+    # Alias for {#policy} - explicitly raises if policy not found.
+    #
+    # @param (see #policy)
+    # @return (see #policy)
+    # @raise (see #policy)
+    #
+    # @see #policy
     def policy!(record, policy_class: nil)
       policy(record, policy_class: policy_class)
     end
 
-    # Scope a relation using the policy scope
+    # Filter a collection/scope based on user permissions.
+    #
+    # Uses the policy's Scope class to filter an ActiveRecord relation,
+    # returning only records that the user is permitted to see.
+    # Available as a helper method in views.
+    #
+    # @param scope [ActiveRecord::Relation, Class] the relation or model class to filter
+    # @param policy_scope_class [Class, nil] optional scope class to use
+    #
+    # @return [ActiveRecord::Relation] filtered relation
+    #
+    # @raise [PolicyNotDefinedError] if scope class cannot be found
+    #
+    # @example Basic usage
+    #   def index
+    #     @posts = policy_scope(Post)  # Uses PostPolicy::Scope
+    #   end
+    #
+    # @example With ActiveRecord relation
+    #   def index
+    #     @posts = policy_scope(Post.published)  # Filters published posts
+    #   end
+    #
+    # @example In view
+    #   <% policy_scope(Post).each do |post| %>
+    #     <%= post.title %>
+    #   <% end %>
+    #
+    # @see SimpleAuthorize::Policy::Scope
     def policy_scope(scope, policy_scope_class: nil)
       @policy_scoping_performed = true
 
@@ -176,12 +353,50 @@ module SimpleAuthorize
       result
     end
 
-    # Ensure scope exists, raising if not found
+    # Alias for {#policy_scope} - explicitly raises if scope not found.
+    #
+    # @param (see #policy_scope)
+    # @return (see #policy_scope)
+    # @raise (see #policy_scope)
+    #
+    # @see #policy_scope
     def policy_scope!(scope, policy_scope_class: nil)
       policy_scope(scope, policy_scope_class: policy_scope_class)
     end
 
-    # Get permitted attributes for strong parameters
+    # @!endgroup
+
+    # @!group Strong Parameters Integration
+
+    # Get permitted attributes from policy for strong parameters.
+    #
+    # Returns an array of attribute names that the user is allowed to modify
+    # for the given record and action. Looks for action-specific methods first
+    # (e.g., `permitted_attributes_for_create`), falling back to general
+    # `permitted_attributes` method.
+    #
+    # @param record [Object] the record being modified
+    # @param action [String, Symbol, nil] the action name (defaults to current action)
+    #
+    # @return [Array<Symbol>] array of permitted attribute names
+    #
+    # @raise [PolicyNotDefinedError] if policy doesn't define permitted attributes
+    #
+    # @example Basic usage
+    #   def create
+    #     @post = Post.new
+    #     attrs = permitted_attributes(@post)  # [:title, :body]
+    #     @post.assign_attributes(params[:post].permit(*attrs))
+    #   end
+    #
+    # @example Action-specific
+    #   # Looks for PostPolicy#permitted_attributes_for_create
+    #   permitted_attributes(@post, :create)  # => [:title, :body]
+    #
+    #   # Looks for PostPolicy#permitted_attributes_for_update
+    #   permitted_attributes(@post, :update)  # => [:title, :body, :published]
+    #
+    # @see #policy_params
     def permitted_attributes(record, action = nil)
       action ||= action_name
       policy = policy(record)
@@ -196,7 +411,30 @@ module SimpleAuthorize
       end
     end
 
-    # Get visible attributes for a record
+    # Get attributes that the user can view for a record.
+    #
+    # Returns an array of attribute names that should be visible to the user.
+    # Looks for action-specific methods first (e.g., `visible_attributes_for_show`),
+    # falling back to general `visible_attributes` method.
+    #
+    # @param record [Object] the record being viewed
+    # @param action [String, Symbol, nil] the action name (defaults to current action)
+    #
+    # @return [Array<Symbol>] array of visible attribute names
+    #
+    # @example Basic usage
+    #   def show
+    #     @post = Post.find(params[:id])
+    #     @visible_attrs = visible_attributes(@post)
+    #   end
+    #
+    # @example In view
+    #   <% visible_attributes(@post).each do |attr| %>
+    #     <p><strong><%= attr %>:</strong> <%= @post.send(attr) %></p>
+    #   <% end %>
+    #
+    # @see #editable_attributes
+    # @see #filter_attributes
     def visible_attributes(record, action = nil)
       action ||= action_name
       policy = policy(record)
@@ -211,7 +449,24 @@ module SimpleAuthorize
       end
     end
 
-    # Get editable attributes for a record
+    # Get attributes that the user can edit for a record.
+    #
+    # Returns an array of attribute names that should be editable by the user.
+    # Looks for action-specific methods first (e.g., `editable_attributes_for_update`),
+    # falling back to general `editable_attributes` method.
+    #
+    # @param record [Object] the record being edited
+    # @param action [String, Symbol, nil] the action name (defaults to current action)
+    #
+    # @return [Array<Symbol>] array of editable attribute names
+    #
+    # @example Basic usage
+    #   def edit
+    #     @post = Post.find(params[:id])
+    #     @editable_attrs = editable_attributes(@post)
+    #   end
+    #
+    # @see #visible_attributes
     def editable_attributes(record, action = nil)
       action ||= action_name
       policy = policy(record)
@@ -226,13 +481,55 @@ module SimpleAuthorize
       end
     end
 
-    # Filter a hash of attributes to only include visible ones
+    # Filter a hash of attributes to only include visible ones.
+    #
+    # Takes a hash of attributes and returns a new hash containing only
+    # attributes that are in the {#visible_attributes} list for the record.
+    #
+    # @param record [Object] the record to check visibility against
+    # @param attributes [Hash] hash of attribute key-value pairs
+    #
+    # @return [Hash] filtered hash with only visible attributes
+    #
+    # @example
+    #   attrs = { id: 1, title: "Post", secret_key: "abc123" }
+    #   filter_attributes(@post, attrs)  # => { id: 1, title: "Post" }
+    #
+    # @see #visible_attributes
     def filter_attributes(record, attributes)
       visible = visible_attributes(record)
       attributes.select { |key, _value| visible.include?(key.to_sym) }
     end
 
-    # Automatically build permitted params from policy
+    # Automatically build permitted params from policy.
+    #
+    # Convenience method that combines `params.require().permit()` with
+    # policy-defined permitted attributes. Simplifies strong parameters setup.
+    #
+    # @param record [Object] the record being created/updated
+    # @param param_key [String, Symbol, nil] the params key (defaults to model's param_key)
+    #
+    # @return [ActionController::Parameters] permitted parameters
+    #
+    # @example Basic usage
+    #   def create
+    #     @post = Post.new(policy_params(Post.new))
+    #     @post.save
+    #   end
+    #
+    # @example With custom param key
+    #   def create
+    #     @post = Post.new(policy_params(Post.new, :custom_post))
+    #   end
+    #
+    # @example Instead of manual permit
+    #   # Instead of:
+    #   params.require(:post).permit(*permitted_attributes(@post))
+    #
+    #   # Use:
+    #   policy_params(@post)
+    #
+    # @see #permitted_attributes
     def policy_params(record, param_key = nil)
       param_key ||= record.model_name.param_key
       params.require(param_key).permit(*permitted_attributes(record))

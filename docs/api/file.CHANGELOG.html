@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: CHANGELOG
+  
+    &mdash; Documentation by YARD 0.9.37
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "CHANGELOG";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: CHANGELOG</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'>
+<h1 id="label-Changelog">Changelog</h1>
+
+<p>All notable changes to this project will be documented in this file.</p>
+
+<p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>, and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+
+<h2 id="label-1.0.0+-+2025-11-03"><a href="https://github.com/scottlaplant/simple_authorize/releases/tag/v1.0.0">1.0.0</a> - 2025-11-03</h2>
+
+<h3 id="label-Added">Added</h3>
+
+<h4 id="label-Core+Authorization">Core Authorization</h4>
+<ul><li>
+<p><strong>Policy Generator</strong> - Rails generator for creating policy classes (<code>rails g simple_authorize:policy ModelName</code>)</p>
+</li><li>
+<p><strong>Install Generator</strong> - Setup wizard creating initializer and base policy (<code>rails g simple_authorize:install</code>)</p>
+</li><li>
+<p><strong>Headless Policies</strong> - Authorization for actions without a specific record</p>
+</li><li>
+<p><strong>Batch Authorization</strong> - Efficiently authorize multiple records with <code>authorize_all</code>, <code>authorized_records</code>, and <code>partition_records</code></p>
+</li></ul>
+
+<h4 id="label-Performance+-26+Caching">Performance &amp; Caching</h4>
+<ul><li>
+<p><strong>Policy Caching</strong> - Request-level memoization to reduce database queries and improve performance</p>
+</li><li>
+<p><strong>Configurable Cache</strong> - Enable/disable policy caching via <code>config.enable_policy_cache</code></p>
+</li></ul>
+
+<h4 id="label-Instrumentation+-26+Monitoring">Instrumentation &amp; Monitoring</h4>
+<ul><li>
+<p><strong>ActiveSupport::Notifications</strong> - Comprehensive instrumentation for authorization events</p>
+</li><li>
+<p><strong>Audit Logging</strong> - Track authorization attempts, denials, and policy scope usage</p>
+</li><li>
+<p><strong>Custom Event Subscribers</strong> - Hook into <code>authorize.simple_authorize</code> and <code>policy_scope.simple_authorize</code> events</p>
+</li></ul>
+
+<h4 id="label-API+Support">API Support</h4>
+<ul><li>
+<p><strong>JSON/XML Error Responses</strong> - Automatic API-friendly error responses with proper HTTP status codes</p>
+</li><li>
+<p><strong>API Request Detection</strong> - Intelligent detection of API requests (JSON/XML format and headers)</p>
+</li><li>
+<p><strong>Configurable Error Details</strong> - Control error detail level with <code>config.api_error_details</code></p>
+</li><li>
+<p><strong>Status Code Handling</strong> - 401 Unauthorized vs 403 Forbidden based on authentication state</p>
+</li></ul>
+
+<h4 id="label-Attribute-Level+Authorization">Attribute-Level Authorization</h4>
+<ul><li>
+<p><strong>Visible Attributes</strong> - Control which attributes users can view (<code>visible_attributes</code>, <code>visible_attributes_for_action</code>)</p>
+</li><li>
+<p><strong>Editable Attributes</strong> - Control which attributes users can modify (<code>editable_attributes</code>, <code>editable_attributes_for_action</code>)</p>
+</li><li>
+<p><strong>Filter Helpers</strong> - Automatically filter attribute hashes based on policy rules</p>
+</li><li>
+<p><strong>Strong Parameters Integration</strong> - <code>policy_params</code> method for seamless Rails strong parameters integration</p>
+</li></ul>
+
+<h4 id="label-Testing+Support">Testing Support</h4>
+<ul><li>
+<p><strong>RSpec Matchers</strong> - <code>permit_action</code>, <code>forbid_action</code>, <code>permit_mass_assignment</code>, <code>forbid_mass_assignment</code></p>
+</li><li>
+<p><strong>RSpec Helpers</strong> - <code>permit_editing</code>, <code>forbid_editing</code>, <code>permit_viewing</code>, <code>forbid_viewing</code></p>
+</li><li>
+<p><strong>Minitest Helpers</strong> - <code>assert_permit_action</code>, <code>assert_forbid_action</code> for Minitest users</p>
+</li><li>
+<p><strong>Policy Testing</strong> - Comprehensive test helpers for both testing frameworks</p>
+</li></ul>
+
+<h4 id="label-Internationalization">Internationalization</h4>
+<ul><li>
+<p><strong>I18n Support</strong> - Configurable error messages with internationalization support</p>
+</li><li>
+<p><strong>Custom Translations</strong> - Per-policy and per-action error message translations</p>
+</li><li>
+<p><strong>Configurable Scope</strong> - Customize I18n scope with <code>config.i18n_scope</code></p>
+</li><li>
+<p><strong>Fallback Messages</strong> - Graceful fallback to default messages when translations are missing</p>
+</li></ul>
+
+<h4 id="label-Security+-26+Best+Practices">Security &amp; Best Practices</h4>
+<ul><li>
+<p><strong>Authorization Verification</strong> - <code>verify_authorized</code> and <code>verify_policy_scoped</code> to catch missing authorization</p>
+</li><li>
+<p><strong>Skip Authorization</strong> - Explicit <code>skip_authorization</code> and <code>skip_policy_scope</code> methods</p>
+</li><li>
+<p><strong>Auto-Verify Module</strong> - Optional automatic verification with <code>include SimpleAuthorize::Controller::AutoVerify</code></p>
+</li><li>
+<p><strong>Safe Redirects</strong> - Security-conscious redirect handling preventing open redirect vulnerabilities</p>
+</li></ul>
+
+<h4 id="label-Developer+Experience">Developer Experience</h4>
+<ul><li>
+<p><strong>Comprehensive Documentation</strong> - Extensive README with examples and best practices</p>
+</li><li>
+<p><strong>Error Messages</strong> - Clear, actionable error messages for common mistakes</p>
+</li><li>
+<p><strong>Helper Methods</strong> - View helpers automatically included (<code>policy</code>, <code>policy_scope</code>, <code>authorized_user</code>)</p>
+</li><li>
+<p><strong>Role Helpers</strong> - Convenient <code>admin_user?</code>, <code>contributor_user?</code>, <code>viewer_user?</code> methods</p>
+</li></ul>
+
+<h3 id="label-Changed">Changed</h3>
+<ul><li>
+<p>Improved error handling with detailed exception information</p>
+</li><li>
+<p>Enhanced policy class resolution with namespace support</p>
+</li><li>
+<p>Better cache key generation for policy instances</p>
+</li></ul>
+
+<h3 id="label-Fixed">Fixed</h3>
+<ul><li>
+<p>Policy scope resolution for collection classes</p>
+</li><li>
+<p>Safe referrer path handling for redirects</p>
+</li><li>
+<p>API request detection edge cases</p>
+</li></ul>
+
+<h3 id="label-Security">Security</h3>
+<ul><li>
+<p>Added protection against open redirect vulnerabilities in <code>safe_referrer_path</code></p>
+</li><li>
+<p>Implemented proper HTTP status codes (401 vs 403) for API errors</p>
+</li><li>
+<p>Enhanced authorization verification to prevent bypass attempts</p>
+</li></ul>
+
+<h2 id="label-0.1.0+-+Initial+Development"><a href="https://github.com/scottlaplant/simple_authorize/releases/tag/v0.1.0">0.1.0</a> - Initial Development</h2>
+
+<h3 id="label-Added">Added</h3>
+<ul><li>
+<p>Basic policy-based authorization</p>
+</li><li>
+<p>Core authorization methods (<code>authorize</code>, <code>policy</code>, <code>policy_scope</code>)</p>
+</li><li>
+<p>Integration with Rails controllers</p>
+</li><li>
+<p>Basic test helpers</p>
+</li><li>
+<p>Initial documentation</p>
+</li></ul>
+<hr>
+
+<h2 id="label-Upgrading">Upgrading</h2>
+
+<h3 id="label-From+0.1.0+to+1.0.0">From 0.1.0 to 1.0.0</h3>
+
+<p><strong>Breaking Changes:</strong> None - v1.0.0 is fully backward compatible with 0.1.0.</p>
+
+<p><strong>New Features:</strong> All features listed above are opt-in and won’t affect existing implementations.</p>
+
+<p><strong>Recommended Updates:</strong> 1. Run <code>rails g simple_authorize:install</code> to generate the configuration file 2. Enable policy caching for better performance: <code>config.enable_policy_cache = true</code> 3. Enable instrumentation for monitoring: <code>config.enable_instrumentation = true</code> 4. Add RSpec matchers to your spec_helper: <code>require &#39;simple_authorize/rspec&#39;</code></p>
+
+<p><strong>Configuration:</strong></p>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># config/initializers/simple_authorize.rb
+</span><span class='const'><span class='object_link'><a href="SimpleAuthorize.html" title="SimpleAuthorize (module)">SimpleAuthorize</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure'><span class='object_link'><a href="SimpleAuthorize.html#configure-class_method" title="SimpleAuthorize.configure (method)">configure</a></span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_config'>config</span><span class='op'>|</span>
+  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_enable_policy_cache'>enable_policy_cache</span> <span class='op'>=</span> <span class='kw'>true</span>       <span class='comment'># Enable request-level policy caching
+</span>  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_enable_instrumentation'>enable_instrumentation</span> <span class='op'>=</span> <span class='kw'>true</span>    <span class='comment'># Enable ActiveSupport::Notifications
+</span>  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_api_error_details'>api_error_details</span> <span class='op'>=</span> <span class='kw'>false</span>        <span class='comment'># Exclude sensitive details in API errors
+</span>  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_i18n_enabled'>i18n_enabled</span> <span class='op'>=</span> <span class='kw'>true</span>              <span class='comment'># Enable I18n support
+</span>  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_i18n_scope'>i18n_scope</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>simple_authorize</span><span class='tstring_end'>&quot;</span></span>  <span class='comment'># I18n translation scope
+</span>  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_default_error_message'>default_error_message</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>You are not authorized to perform this action.</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span>
+</code></pre>
+
+<h2 id="label-Support">Support</h2>
+<ul><li>
+<p><strong>Documentation</strong>: <a href="README_md.html">README.md</a></p>
+</li><li>
+<p><strong>Issues</strong>: <a href="https://github.com/scottlaplant/simple_authorize/issues">GitHub Issues</a></p>
+</li><li>
+<p><strong>Security</strong>: <a href="SECURITY_md.html">SECURITY.md</a></p>
+</li><li>
+<p><strong>Contributing</strong>: <a href="CONTRIBUTING_md.html">CONTRIBUTING.md</a></p>
+</li></ul>
+</div></div>
+
+      <div id="footer">
+  Generated on Tue Nov  4 21:47:28 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.3.6).
+</div>
+
+    </div>
+  </body>
+</html>

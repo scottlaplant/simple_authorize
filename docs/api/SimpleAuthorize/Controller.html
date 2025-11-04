@@ -1,0 +1,3975 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Module: SimpleAuthorize::Controller
+  
+    &mdash; Documentation by YARD 0.9.37
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "SimpleAuthorize::Controller";
+  relpath = '../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../_index.html">Index (C)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../SimpleAuthorize.html" title="SimpleAuthorize (module)">SimpleAuthorize</a></span></span>
+     &raquo; 
+    <span class="title">Controller</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Module: SimpleAuthorize::Controller
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+
+  
+  
+  <dl>
+      <dt>Extended by:</dt>
+      <dd>ActiveSupport::Concern</dd>
+  </dl>
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/simple_authorize/controller.rb</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>Controller integration for SimpleAuthorize authorization system.</p>
+
+<p>Include this module in your ApplicationController to add authorization capabilities to your Rails application. Provides methods for authorizing actions, filtering scopes, managing attributes, and handling errors.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>Basic setup</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='kw'>class</span> <span class='const'>ApplicationController</span> <span class='op'>&lt;</span> <span class='const'>ActionController</span><span class='op'>::</span><span class='const'>Base</span>
+  <span class='id identifier rubyid_include'>include</span> <span class='const'><span class='object_link'><a href="../SimpleAuthorize.html" title="SimpleAuthorize (module)">SimpleAuthorize</a></span></span><span class='op'>::</span><span class='const'>Controller</span>
+  <span class='id identifier rubyid_rescue_from_authorization_errors'>rescue_from_authorization_errors</span>
+<span class='kw'>end</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>In a controller action</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_update'>update</span>
+  <span class='ivar'>@post</span> <span class='op'>=</span> <span class='const'>Post</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:id</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_authorize'>authorize</span> <span class='ivar'>@post</span>
+  <span class='kw'>if</span> <span class='ivar'>@post</span><span class='period'>.</span><span class='id identifier rubyid_update'>update</span><span class='lparen'>(</span><span class='id identifier rubyid_policy_params'>policy_params</span><span class='lparen'>(</span><span class='ivar'>@post</span><span class='rparen'>)</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_redirect_to'>redirect_to</span> <span class='ivar'>@post</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_render'>render</span> <span class='symbol'>:edit</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>With scoping</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_index'>index</span>
+  <span class='ivar'>@posts</span> <span class='op'>=</span> <span class='id identifier rubyid_policy_scope'>policy_scope</span><span class='lparen'>(</span><span class='const'>Post</span><span class='rparen'>)</span>
+<span class='kw'>end</span></code></pre>
+    
+  </div>
+
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="Policy.html" title="SimpleAuthorize::Policy (class)">For policy implementation</a></span></li>
+    
+  </ul>
+
+</div><h2>Defined Under Namespace</h2>
+<p class="children">
+  
+    
+      <strong class="modules">Modules:</strong> <span class='object_link'><a href="Controller/AutoVerify.html" title="SimpleAuthorize::Controller::AutoVerify (module)">AutoVerify</a></span>
+    
+  
+    
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Controller/AuthorizationNotPerformedError.html" title="SimpleAuthorize::Controller::AuthorizationNotPerformedError (class)">AuthorizationNotPerformedError</a></span>, <span class='object_link'><a href="Controller/NotAuthorizedError.html" title="SimpleAuthorize::Controller::NotAuthorizedError (class)">NotAuthorizedError</a></span>, <span class='object_link'><a href="Controller/PolicyNotDefinedError.html" title="SimpleAuthorize::Controller::PolicyNotDefinedError (class)">PolicyNotDefinedError</a></span>, <span class='object_link'><a href="Controller/PolicyScopingNotPerformedError.html" title="SimpleAuthorize::Controller::PolicyScopingNotPerformedError (class)">PolicyScopingNotPerformedError</a></span>
+    
+  
+</p>
+
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="ScopingNotPerformedError-constant" class="">ScopingNotPerformedError =
+          <div class="docstring">
+  <div class="discussion">
+    
+<p>Alias for backwards compatibility</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='const'><span class='object_link'><a href="Controller/PolicyScopingNotPerformedError.html" title="SimpleAuthorize::Controller::PolicyScopingNotPerformedError (class)">PolicyScopingNotPerformedError</a></span></span></pre></dd>
+      
+    </dl>
+  
+
+
+
+
+
+
+
+  
+    <h2>
+      Core Authorization Methods
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#authorize-instance_method" title="#authorize (instance method)">#<strong>authorize</strong>(record, query = nil, policy_class: nil)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Authorize an action on a record.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#authorize!-instance_method" title="#authorize! (instance method)">#<strong>authorize!</strong>(record, query = nil, policy_class: nil)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Alias for <span class='object_link'><a href="#authorize-instance_method" title="SimpleAuthorize::Controller#authorize (method)">#authorize</a></span> - explicitly raises exception if not authorized.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#policy-instance_method" title="#policy (instance method)">#<strong>policy</strong>(record, policy_class: nil, namespace: nil)  &#x21d2; SimpleAuthorize::Policy </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Get or instantiate a policy for a record.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#policy!-instance_method" title="#policy! (instance method)">#<strong>policy!</strong>(record, policy_class: nil)  &#x21d2; SimpleAuthorize::Policy </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Alias for <span class='object_link'><a href="#policy-instance_method" title="SimpleAuthorize::Controller#policy (method)">#policy</a></span> - explicitly raises if policy not found.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#policy_scope-instance_method" title="#policy_scope (instance method)">#<strong>policy_scope</strong>(scope, policy_scope_class: nil)  &#x21d2; ActiveRecord::Relation </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Filter a collection/scope based on user permissions.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#policy_scope!-instance_method" title="#policy_scope! (instance method)">#<strong>policy_scope!</strong>(scope, policy_scope_class: nil)  &#x21d2; ActiveRecord::Relation </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Alias for <span class='object_link'><a href="#policy_scope-instance_method" title="SimpleAuthorize::Controller#policy_scope (method)">#policy_scope</a></span> - explicitly raises if scope not found.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+    <h2>
+      Strong Parameters Integration
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#admin_user%3F-instance_method" title="#admin_user? (instance method)">#<strong>admin_user?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Role helper methods.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#allowed_actions-instance_method" title="#allowed_actions (instance method)">#<strong>allowed_actions</strong>(record)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Get all allowed actions for a record.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#allowed_to%3F-instance_method" title="#allowed_to? (instance method)">#<strong>allowed_to?</strong>(action, record, policy_class: nil)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Check if user can perform action without raising.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#api_error_response-instance_method" title="#api_error_response (instance method)">#<strong>api_error_response</strong>(message:, status: 403, details: nil)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Build an API error response.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#api_request%3F-instance_method" title="#api_request? (instance method)">#<strong>api_request?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Check if current request is an API request (JSON/XML).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#authorization_performed%3F-instance_method" title="#authorization_performed? (instance method)">#<strong>authorization_performed?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Check if authorization was performed.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#authorize_all-instance_method" title="#authorize_all (instance method)">#<strong>authorize_all</strong>(records, query = nil, policy_class: nil)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Authorize all records or raise on first failure.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#authorize_headless-instance_method" title="#authorize_headless (instance method)">#<strong>authorize_headless</strong>(policy_class, query = nil)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Support for headless policies (policies without a model).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#authorized_records-instance_method" title="#authorized_records (instance method)">#<strong>authorized_records</strong>(records, query = nil, policy_class: nil)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Return only authorized records.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#authorized_user-instance_method" title="#authorized_user (instance method)">#<strong>authorized_user</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Get the user for authorization (can be overridden).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#clear_policy_cache-instance_method" title="#clear_policy_cache (instance method)">#<strong>clear_policy_cache</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Clear the policy cache.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#contributor_user%3F-instance_method" title="#contributor_user? (instance method)">#<strong>contributor_user?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#editable_attributes-instance_method" title="#editable_attributes (instance method)">#<strong>editable_attributes</strong>(record, action = nil)  &#x21d2; Array&lt;Symbol&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Get attributes that the user can edit for a record.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#filter_attributes-instance_method" title="#filter_attributes (instance method)">#<strong>filter_attributes</strong>(record, attributes)  &#x21d2; Hash </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Filter a hash of attributes to only include visible ones.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#handle_api_authorization_error-instance_method" title="#handle_api_authorization_error (instance method)">#<strong>handle_api_authorization_error</strong>(exception)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Handle API authorization errors with JSON response.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#partition_records-instance_method" title="#partition_records (instance method)">#<strong>partition_records</strong>(records, query = nil, policy_class: nil)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Partition records into [authorized, unauthorized].</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#permitted_attributes-instance_method" title="#permitted_attributes (instance method)">#<strong>permitted_attributes</strong>(record, action = nil)  &#x21d2; Array&lt;Symbol&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Get permitted attributes from policy for strong parameters.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#policy_params-instance_method" title="#policy_params (instance method)">#<strong>policy_params</strong>(record, param_key = nil)  &#x21d2; ActionController::Parameters </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Automatically build permitted params from policy.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#policy_scoped%3F-instance_method" title="#policy_scoped? (instance method)">#<strong>policy_scoped?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Check if policy scoping was performed.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#reset_authorization-instance_method" title="#reset_authorization (instance method)">#<strong>reset_authorization</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Reset authorization tracking (useful in tests).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#skip_authorization-instance_method" title="#skip_authorization (instance method)">#<strong>skip_authorization</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Skip authorization verification for specific actions.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#skip_policy_scope-instance_method" title="#skip_policy_scope (instance method)">#<strong>skip_policy_scope</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Skip policy scope verification for specific actions.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#user_not_authorized-instance_method" title="#user_not_authorized (instance method)">#<strong>user_not_authorized</strong>(exception = nil)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Alias for handle_unauthorized that matches common convention.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#verify_authorized-instance_method" title="#verify_authorized (instance method)">#<strong>verify_authorized</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Verify that authorization was performed.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#verify_policy_scoped-instance_method" title="#verify_policy_scoped (instance method)">#<strong>verify_policy_scoped</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Verify that scoping was performed for index actions.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#viewer_user%3F-instance_method" title="#viewer_user? (instance method)">#<strong>viewer_user?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#visible_attributes-instance_method" title="#visible_attributes (instance method)">#<strong>visible_attributes</strong>(record, action = nil)  &#x21d2; Array&lt;Symbol&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Get attributes that the user can view for a record.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="admin_user?-instance_method">
+  
+    #<strong>admin_user?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Role helper methods</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+662
+663
+664</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 662</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_admin_user?'>admin_user?</span>
+  <span class='id identifier rubyid_current_user'>current_user</span><span class='op'>&amp;.</span><span class='id identifier rubyid_admin?'>admin?</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="allowed_actions-instance_method">
+  
+    #<strong>allowed_actions</strong>(record)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Get all allowed actions for a record</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+650
+651
+652
+653
+654
+655
+656
+657
+658
+659</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 650</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_allowed_actions'>allowed_actions</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_policy'>policy</span> <span class='op'>=</span> <span class='id identifier rubyid_policy'>policy</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_actions'>actions</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+
+  <span class='qsymbols_beg'>%i[</span><span class='tstring_content'>index?</span><span class='words_sep'> </span><span class='tstring_content'>show?</span><span class='words_sep'> </span><span class='tstring_content'>create?</span><span class='words_sep'> </span><span class='tstring_content'>update?</span><span class='words_sep'> </span><span class='tstring_content'>destroy?</span><span class='tstring_end'>]</span></span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_method'>method</span><span class='op'>|</span>
+    <span class='id identifier rubyid_actions'>actions</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_method'>method</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>?</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span> <span class='kw'>if</span> <span class='id identifier rubyid_policy'>policy</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_method'>method</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_policy'>policy</span><span class='period'>.</span><span class='id identifier rubyid_public_send'>public_send</span><span class='lparen'>(</span><span class='id identifier rubyid_method'>method</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_actions'>actions</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="allowed_to?-instance_method">
+  
+    #<strong>allowed_to?</strong>(action, record, policy_class: nil)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Check if user can perform action without raising</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+610
+611
+612
+613
+614
+615
+616</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 610</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_allowed_to?'>allowed_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_action'>action</span><span class='comma'>,</span> <span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='label'>policy_class:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_policy'>policy</span> <span class='op'>=</span> <span class='id identifier rubyid_policy'>policy</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='label'>policy_class:</span> <span class='id identifier rubyid_policy_class'>policy_class</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_query'>query</span> <span class='op'>=</span> <span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>?</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action'>action</span><span class='embexpr_end'>}</span><span class='tstring_content'>?</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_policy'>policy</span><span class='period'>.</span><span class='id identifier rubyid_public_send'>public_send</span><span class='lparen'>(</span><span class='id identifier rubyid_query'>query</span><span class='rparen'>)</span>
+<span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="Controller/PolicyNotDefinedError.html" title="SimpleAuthorize::Controller::PolicyNotDefinedError (class)">PolicyNotDefinedError</a></span></span>
+  <span class='kw'>false</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="api_error_response-instance_method">
+  
+    #<strong>api_error_response</strong>(message:, status: 403, details: nil)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Build an API error response</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+726
+727
+728
+729
+730
+731
+732
+733
+734
+735
+736
+737
+738
+739</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 726</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_api_error_response'>api_error_response</span><span class='lparen'>(</span><span class='label'>message:</span><span class='comma'>,</span> <span class='label'>status:</span> <span class='int'>403</span><span class='comma'>,</span> <span class='label'>details:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_body'>body</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+    <span class='label'>error:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>not_authorized</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+    <span class='label'>message:</span> <span class='id identifier rubyid_message'>message</span>
+  <span class='rbrace'>}</span>
+
+  <span class='id identifier rubyid_body'>body</span><span class='lbracket'>[</span><span class='symbol'>:details</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_details'>details</span> <span class='kw'>if</span> <span class='id identifier rubyid_details'>details</span>
+
+  <span class='lbrace'>{</span>
+    <span class='label'>status:</span> <span class='id identifier rubyid_status'>status</span><span class='comma'>,</span>
+    <span class='label'>content_type:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+    <span class='label'>body:</span> <span class='id identifier rubyid_body'>body</span>
+  <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="api_request?-instance_method">
+  
+    #<strong>api_request?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Check if current request is an API request (JSON/XML)</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+680
+681
+682
+683
+684
+685
+686
+687
+688
+689
+690
+691
+692
+693
+694
+695
+696
+697
+698
+699</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 680</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_api_request?'>api_request?</span>
+  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:request</span><span class='rparen'>)</span>
+
+  <span class='comment'># Check request format
+</span>  <span class='kw'>return</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:format</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_format'>format</span><span class='period'>.</span><span class='id identifier rubyid_json?'>json?</span> <span class='op'>||</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_format'>format</span><span class='period'>.</span><span class='id identifier rubyid_xml?'>xml?</span><span class='rparen'>)</span>
+
+  <span class='comment'># Check Accept header
+</span>  <span class='kw'>if</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:headers</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_headers'>headers</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Accept</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+    <span class='id identifier rubyid_accept'>accept</span> <span class='op'>=</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_headers'>headers</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Accept</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+    <span class='kw'>return</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='id identifier rubyid_accept'>accept</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_accept'>accept</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>application/xml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Check Content-Type header
+</span>  <span class='kw'>if</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:headers</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_headers'>headers</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Content-Type</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+    <span class='id identifier rubyid_content_type'>content_type</span> <span class='op'>=</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_headers'>headers</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Content-Type</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+    <span class='kw'>return</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='id identifier rubyid_content_type'>content_type</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_content_type'>content_type</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>application/xml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>false</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="authorization_performed?-instance_method">
+  
+    #<strong>authorization_performed?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Check if authorization was performed</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+563
+564
+565</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 563</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_authorization_performed?'>authorization_performed?</span>
+  <span class='ivar'>@authorization_performed</span> <span class='op'>==</span> <span class='kw'>true</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="authorize-instance_method">
+  
+    #<strong>authorize</strong>(record, query = nil, policy_class: nil)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Authorize an action on a record.</p>
+
+<p>Checks if the current user is authorized to perform the specified action on the given record. Raises <span class='object_link'><a href="Controller/NotAuthorizedError.html" title="SimpleAuthorize::Controller::NotAuthorizedError (class)">NotAuthorizedError</a></span> if not authorized.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>Basic usage</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_update'>update</span>
+  <span class='ivar'>@post</span> <span class='op'>=</span> <span class='const'>Post</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:id</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_authorize'>authorize</span> <span class='ivar'>@post</span>  <span class='comment'># Calls PostPolicy.new(current_user, @post).update?
+</span>  <span class='ivar'>@post</span><span class='period'>.</span><span class='id identifier rubyid_update'>update</span><span class='lparen'>(</span><span class='id identifier rubyid_post_params'>post_params</span><span class='rparen'>)</span>
+<span class='kw'>end</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>With explicit query</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_publish'>publish</span>
+  <span class='ivar'>@post</span> <span class='op'>=</span> <span class='const'>Post</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:id</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_authorize'>authorize</span> <span class='ivar'>@post</span><span class='comma'>,</span> <span class='symbol'>:publish?</span>  <span class='comment'># Calls PostPolicy#publish?
+</span><span class='kw'>end</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>With custom policy class</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_update'>update</span>
+  <span class='ivar'>@post</span> <span class='op'>=</span> <span class='const'>Post</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:id</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_authorize'>authorize</span> <span class='ivar'>@post</span><span class='comma'>,</span> <span class='label'>policy_class:</span> <span class='const'>AdminPostPolicy</span>
+<span class='kw'>end</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>record</span>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the record to authorize (e.g., Post, Comment)</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>query</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>Symbol</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the policy method to call (e.g., :update?, :destroy?) Defaults to “#action_name?” if not provided</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>policy_class</span>
+      
+      
+        <span class='type'>(<tt>Class</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>optional policy class to use instead of auto-detected</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the record that was authorized</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Controller/NotAuthorizedError.html" title="SimpleAuthorize::Controller::NotAuthorizedError (class)">NotAuthorizedError</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if user is not authorized</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Controller/PolicyNotDefinedError.html" title="SimpleAuthorize::Controller::PolicyNotDefinedError (class)">PolicyNotDefinedError</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if policy class cannot be found</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="#authorize!-instance_method" title="SimpleAuthorize::Controller#authorize! (method)">#authorize!</a></span></li>
+    
+      <li><span class='object_link'><a href="#policy-instance_method" title="SimpleAuthorize::Controller#policy (method)">#policy</a></span></li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 217</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_authorize'>authorize</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='id identifier rubyid_query'>query</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>policy_class:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_query'>query</span> <span class='op'>||=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action_name'>action_name</span><span class='embexpr_end'>}</span><span class='tstring_content'>?</span><span class='tstring_end'>&quot;</span></span>
+  <span class='ivar'>@_policy</span> <span class='op'>=</span> <span class='id identifier rubyid_policy'>policy</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='label'>policy_class:</span> <span class='id identifier rubyid_policy_class'>policy_class</span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_authorized'>authorized</span> <span class='op'>=</span> <span class='ivar'>@_policy</span><span class='period'>.</span><span class='id identifier rubyid_public_send'>public_send</span><span class='lparen'>(</span><span class='id identifier rubyid_query'>query</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='kw'>nil</span>
+
+  <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Controller/NotAuthorizedError.html" title="SimpleAuthorize::Controller::NotAuthorizedError (class)">NotAuthorizedError</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Controller/NotAuthorizedError.html#initialize-instance_method" title="SimpleAuthorize::Controller::NotAuthorizedError#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='label'>query:</span> <span class='id identifier rubyid_query'>query</span><span class='comma'>,</span> <span class='label'>record:</span> <span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='label'>policy:</span> <span class='ivar'>@_policy</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_authorized'>authorized</span>
+
+  <span class='comment'># Emit instrumentation event
+</span>  <span class='id identifier rubyid_instrument_authorization'>instrument_authorization</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='id identifier rubyid_query'>query</span><span class='comma'>,</span> <span class='ivar'>@_policy</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='comma'>,</span> <span class='id identifier rubyid_authorized'>authorized</span><span class='comma'>,</span> <span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_instrumentation_enabled?'>instrumentation_enabled?</span>
+
+  <span class='id identifier rubyid_raise'>raise</span> <span class='id identifier rubyid_error'>error</span> <span class='kw'>if</span> <span class='id identifier rubyid_error'>error</span>
+
+  <span class='ivar'>@authorization_performed</span> <span class='op'>=</span> <span class='kw'>true</span>
+  <span class='id identifier rubyid_record'>record</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="authorize!-instance_method">
+  
+    #<strong>authorize!</strong>(record, query = nil, policy_class: nil)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Alias for <span class='object_link'><a href="#authorize-instance_method" title="SimpleAuthorize::Controller#authorize (method)">#authorize</a></span> - explicitly raises exception if not authorized.</p>
+
+<p>Behaves identically to <span class='object_link'><a href="#authorize-instance_method" title="SimpleAuthorize::Controller#authorize (method)">#authorize</a></span>, always raising an exception if authorization fails. Provided for API clarity.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>record</span>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the record to authorize (e.g., Post, Comment)</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>query</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>Symbol</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the policy method to call (e.g., :update?, :destroy?) Defaults to “#action_name?” if not provided</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>policy_class</span>
+      
+      
+        <span class='type'>(<tt>Class</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>optional policy class to use instead of auto-detected</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the record that was authorized</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Controller/NotAuthorizedError.html" title="SimpleAuthorize::Controller::NotAuthorizedError (class)">NotAuthorizedError</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if user is not authorized</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Controller/PolicyNotDefinedError.html" title="SimpleAuthorize::Controller::PolicyNotDefinedError (class)">PolicyNotDefinedError</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if policy class cannot be found</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="#authorize-instance_method" title="SimpleAuthorize::Controller#authorize (method)">#authorize</a></span></li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+245
+246
+247</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 245</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_authorize!'>authorize!</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='id identifier rubyid_query'>query</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>policy_class:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_authorize'>authorize</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='id identifier rubyid_query'>query</span><span class='comma'>,</span> <span class='label'>policy_class:</span> <span class='id identifier rubyid_policy_class'>policy_class</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="authorize_all-instance_method">
+  
+    #<strong>authorize_all</strong>(records, query = nil, policy_class: nil)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Authorize all records or raise on first failure</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+621
+622
+623
+624
+625
+626
+627
+628
+629</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 621</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_authorize_all'>authorize_all</span><span class='lparen'>(</span><span class='id identifier rubyid_records'>records</span><span class='comma'>,</span> <span class='id identifier rubyid_query'>query</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>policy_class:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_query'>query</span> <span class='op'>||=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action_name'>action_name</span><span class='embexpr_end'>}</span><span class='tstring_content'>?</span><span class='tstring_end'>&quot;</span></span>
+
+  <span class='id identifier rubyid_records'>records</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_record'>record</span><span class='op'>|</span>
+    <span class='id identifier rubyid_authorize'>authorize</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='id identifier rubyid_query'>query</span><span class='comma'>,</span> <span class='label'>policy_class:</span> <span class='id identifier rubyid_policy_class'>policy_class</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_records'>records</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="authorize_headless-instance_method">
+  
+    #<strong>authorize_headless</strong>(policy_class, query = nil)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Support for headless policies (policies without a model)</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+591
+592
+593
+594
+595
+596
+597
+598
+599
+600
+601
+602
+603
+604
+605
+606
+607</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 591</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_authorize_headless'>authorize_headless</span><span class='lparen'>(</span><span class='id identifier rubyid_policy_class'>policy_class</span><span class='comma'>,</span> <span class='id identifier rubyid_query'>query</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_query'>query</span> <span class='op'>||=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action_name'>action_name</span><span class='embexpr_end'>}</span><span class='tstring_content'>?</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_policy'>policy</span> <span class='op'>=</span> <span class='id identifier rubyid_policy_class'>policy_class</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_authorized_user'>authorized_user</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_authorized'>authorized</span> <span class='op'>=</span> <span class='id identifier rubyid_policy'>policy</span><span class='period'>.</span><span class='id identifier rubyid_public_send'>public_send</span><span class='lparen'>(</span><span class='id identifier rubyid_query'>query</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='kw'>nil</span>
+
+  <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Controller/NotAuthorizedError.html" title="SimpleAuthorize::Controller::NotAuthorizedError (class)">NotAuthorizedError</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Controller/NotAuthorizedError.html#initialize-instance_method" title="SimpleAuthorize::Controller::NotAuthorizedError#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='label'>query:</span> <span class='id identifier rubyid_query'>query</span><span class='comma'>,</span> <span class='label'>record:</span> <span class='id identifier rubyid_policy_class'>policy_class</span><span class='comma'>,</span> <span class='label'>policy:</span> <span class='id identifier rubyid_policy'>policy</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_authorized'>authorized</span>
+
+  <span class='comment'># Emit instrumentation event (with nil record for headless policies)
+</span>  <span class='id identifier rubyid_instrument_authorization'>instrument_authorization</span><span class='lparen'>(</span><span class='kw'>nil</span><span class='comma'>,</span> <span class='id identifier rubyid_query'>query</span><span class='comma'>,</span> <span class='id identifier rubyid_policy_class'>policy_class</span><span class='comma'>,</span> <span class='id identifier rubyid_authorized'>authorized</span><span class='comma'>,</span> <span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_instrumentation_enabled?'>instrumentation_enabled?</span>
+
+  <span class='id identifier rubyid_raise'>raise</span> <span class='id identifier rubyid_error'>error</span> <span class='kw'>if</span> <span class='id identifier rubyid_error'>error</span>
+
+  <span class='ivar'>@authorization_performed</span> <span class='op'>=</span> <span class='kw'>true</span>
+  <span class='kw'>true</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="authorized_records-instance_method">
+  
+    #<strong>authorized_records</strong>(records, query = nil, policy_class: nil)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Return only authorized records</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+632
+633
+634
+635
+636
+637
+638</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 632</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_authorized_records'>authorized_records</span><span class='lparen'>(</span><span class='id identifier rubyid_records'>records</span><span class='comma'>,</span> <span class='id identifier rubyid_query'>query</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>policy_class:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_query'>query</span> <span class='op'>||=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action_name'>action_name</span><span class='embexpr_end'>}</span><span class='tstring_content'>?</span><span class='tstring_end'>&quot;</span></span>
+
+  <span class='id identifier rubyid_records'>records</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_record'>record</span><span class='op'>|</span>
+    <span class='id identifier rubyid_allowed_to?'>allowed_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_query'>query</span><span class='comma'>,</span> <span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='label'>policy_class:</span> <span class='id identifier rubyid_policy_class'>policy_class</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="authorized_user-instance_method">
+  
+    #<strong>authorized_user</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Get the user for authorization (can be overridden)</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+573
+574
+575</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 573</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_authorized_user'>authorized_user</span>
+  <span class='id identifier rubyid_current_user'>current_user</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="clear_policy_cache-instance_method">
+  
+    #<strong>clear_policy_cache</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Clear the policy cache</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+578
+579
+580</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 578</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_clear_policy_cache'>clear_policy_cache</span>
+  <span class='ivar'>@_policy_cache</span> <span class='op'>=</span> <span class='kw'>nil</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="contributor_user?-instance_method">
+  
+    #<strong>contributor_user?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+666
+667
+668</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 666</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_contributor_user?'>contributor_user?</span>
+  <span class='id identifier rubyid_current_user'>current_user</span><span class='op'>&amp;.</span><span class='id identifier rubyid_contributor?'>contributor?</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="editable_attributes-instance_method">
+  
+    #<strong>editable_attributes</strong>(record, action = nil)  &#x21d2; <tt>Array&lt;Symbol&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Get attributes that the user can edit for a record.</p>
+
+<p>Returns an array of attribute names that should be editable by the user. Looks for action-specific methods first (e.g., <code>editable_attributes_for_update</code>), falling back to general <code>editable_attributes</code> method.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>Basic usage</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_edit'>edit</span>
+  <span class='ivar'>@post</span> <span class='op'>=</span> <span class='const'>Post</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:id</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='ivar'>@editable_attrs</span> <span class='op'>=</span> <span class='id identifier rubyid_editable_attributes'>editable_attributes</span><span class='lparen'>(</span><span class='ivar'>@post</span><span class='rparen'>)</span>
+<span class='kw'>end</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>record</span>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the record being edited</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>action</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>Symbol</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the action name (defaults to current action)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;Symbol&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>array of editable attribute names</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="#visible_attributes-instance_method" title="SimpleAuthorize::Controller#visible_attributes (method)">#visible_attributes</a></span></li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 470</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_editable_attributes'>editable_attributes</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='id identifier rubyid_action'>action</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_action'>action</span> <span class='op'>||=</span> <span class='id identifier rubyid_action_name'>action_name</span>
+  <span class='id identifier rubyid_policy'>policy</span> <span class='op'>=</span> <span class='id identifier rubyid_policy'>policy</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_method_name'>method_name</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>editable_attributes_for_</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action'>action</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+
+  <span class='kw'>if</span> <span class='id identifier rubyid_policy'>policy</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_policy'>policy</span><span class='period'>.</span><span class='id identifier rubyid_public_send'>public_send</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='rparen'>)</span>
+  <span class='kw'>elsif</span> <span class='id identifier rubyid_policy'>policy</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:editable_attributes</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_policy'>policy</span><span class='period'>.</span><span class='id identifier rubyid_editable_attributes'>editable_attributes</span>
+  <span class='kw'>else</span>
+    <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="filter_attributes-instance_method">
+  
+    #<strong>filter_attributes</strong>(record, attributes)  &#x21d2; <tt>Hash</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Filter a hash of attributes to only include visible ones.</p>
+
+<p>Takes a hash of attributes and returns a new hash containing only attributes that are in the <span class='object_link'><a href="#visible_attributes-instance_method" title="SimpleAuthorize::Controller#visible_attributes (method)">#visible_attributes</a></span> list for the record.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='id identifier rubyid_attrs'>attrs</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>id:</span> <span class='int'>1</span><span class='comma'>,</span> <span class='label'>title:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Post</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>secret_key:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>abc123</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span>
+<span class='id identifier rubyid_filter_attributes'>filter_attributes</span><span class='lparen'>(</span><span class='ivar'>@post</span><span class='comma'>,</span> <span class='id identifier rubyid_attrs'>attrs</span><span class='rparen'>)</span>  <span class='comment'># =&gt; { id: 1, title: &quot;Post&quot; }</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>record</span>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the record to check visibility against</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>attributes</span>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>hash of attribute key-value pairs</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>filtered hash with only visible attributes</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="#visible_attributes-instance_method" title="SimpleAuthorize::Controller#visible_attributes (method)">#visible_attributes</a></span></li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+499
+500
+501
+502</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 499</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_filter_attributes'>filter_attributes</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='id identifier rubyid_attributes'>attributes</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_visible'>visible</span> <span class='op'>=</span> <span class='id identifier rubyid_visible_attributes'>visible_attributes</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_attributes'>attributes</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid__value'>_value</span><span class='op'>|</span> <span class='id identifier rubyid_visible'>visible</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="handle_api_authorization_error-instance_method">
+  
+    #<strong>handle_api_authorization_error</strong>(exception)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Handle API authorization errors with JSON response</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+702
+703
+704
+705
+706
+707
+708
+709
+710
+711
+712
+713
+714
+715
+716
+717
+718
+719
+720
+721
+722
+723</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 702</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_handle_api_authorization_error'>handle_api_authorization_error</span><span class='lparen'>(</span><span class='id identifier rubyid_exception'>exception</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='id identifier rubyid_exception'>exception</span><span class='period'>.</span><span class='id identifier rubyid_record'>record</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='id identifier rubyid_authorized_user'>authorized_user</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>?</span> <span class='int'>401</span> <span class='op'>:</span> <span class='int'>403</span>
+  <span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../SimpleAuthorize.html" title="SimpleAuthorize (module)">SimpleAuthorize</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configuration'><span class='object_link'><a href="../SimpleAuthorize.html#configuration-class_method" title="SimpleAuthorize.configuration (method)">configuration</a></span></span><span class='period'>.</span><span class='id identifier rubyid_default_error_message'><span class='object_link'><a href="Configuration.html#default_error_message-instance_method" title="SimpleAuthorize::Configuration#default_error_message (method)">default_error_message</a></span></span>
+
+  <span class='id identifier rubyid_body'>body</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+    <span class='label'>error:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>not_authorized</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+    <span class='label'>message:</span> <span class='id identifier rubyid_message'>message</span>
+  <span class='rbrace'>}</span>
+
+  <span class='comment'># Add detailed information if configured
+</span>  <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="../SimpleAuthorize.html" title="SimpleAuthorize (module)">SimpleAuthorize</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configuration'><span class='object_link'><a href="../SimpleAuthorize.html#configuration-class_method" title="SimpleAuthorize.configuration (method)">configuration</a></span></span><span class='period'>.</span><span class='id identifier rubyid_api_error_details'><span class='object_link'><a href="Configuration.html#api_error_details-instance_method" title="SimpleAuthorize::Configuration#api_error_details (method)">api_error_details</a></span></span>
+    <span class='id identifier rubyid_body'>body</span><span class='lbracket'>[</span><span class='symbol'>:query</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_exception'>exception</span><span class='period'>.</span><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+    <span class='id identifier rubyid_body'>body</span><span class='lbracket'>[</span><span class='symbol'>:record_type</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_exception'>exception</span><span class='period'>.</span><span class='id identifier rubyid_record'>record</span><span class='op'>&amp;.</span><span class='id identifier rubyid_class'>class</span><span class='op'>&amp;.</span><span class='id identifier rubyid_name'>name</span>
+    <span class='id identifier rubyid_body'>body</span><span class='lbracket'>[</span><span class='symbol'>:policy</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_exception'>exception</span><span class='period'>.</span><span class='id identifier rubyid_policy'>policy</span><span class='op'>&amp;.</span><span class='id identifier rubyid_class'>class</span><span class='op'>&amp;.</span><span class='id identifier rubyid_name'>name</span>
+  <span class='kw'>end</span>
+
+  <span class='lbrace'>{</span>
+    <span class='label'>status:</span> <span class='id identifier rubyid_status'>status</span><span class='comma'>,</span>
+    <span class='label'>content_type:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+    <span class='label'>body:</span> <span class='id identifier rubyid_body'>body</span>
+  <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="partition_records-instance_method">
+  
+    #<strong>partition_records</strong>(records, query = nil, policy_class: nil)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Partition records into [authorized, unauthorized]</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+641
+642
+643
+644
+645
+646
+647</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 641</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_partition_records'>partition_records</span><span class='lparen'>(</span><span class='id identifier rubyid_records'>records</span><span class='comma'>,</span> <span class='id identifier rubyid_query'>query</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>policy_class:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_query'>query</span> <span class='op'>||=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action_name'>action_name</span><span class='embexpr_end'>}</span><span class='tstring_content'>?</span><span class='tstring_end'>&quot;</span></span>
+
+  <span class='id identifier rubyid_records'>records</span><span class='period'>.</span><span class='id identifier rubyid_partition'>partition</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_record'>record</span><span class='op'>|</span>
+    <span class='id identifier rubyid_allowed_to?'>allowed_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_query'>query</span><span class='comma'>,</span> <span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='label'>policy_class:</span> <span class='id identifier rubyid_policy_class'>policy_class</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="permitted_attributes-instance_method">
+  
+    #<strong>permitted_attributes</strong>(record, action = nil)  &#x21d2; <tt>Array&lt;Symbol&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Get permitted attributes from policy for strong parameters.</p>
+
+<p>Returns an array of attribute names that the user is allowed to modify for the given record and action. Looks for action-specific methods first (e.g., <code>permitted_attributes_for_create</code>), falling back to general <code>permitted_attributes</code> method.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>Basic usage</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_create'>create</span>
+  <span class='ivar'>@post</span> <span class='op'>=</span> <span class='const'>Post</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+  <span class='id identifier rubyid_attrs'>attrs</span> <span class='op'>=</span> <span class='id identifier rubyid_permitted_attributes'>permitted_attributes</span><span class='lparen'>(</span><span class='ivar'>@post</span><span class='rparen'>)</span>  <span class='comment'># [:title, :body]
+</span>  <span class='ivar'>@post</span><span class='period'>.</span><span class='id identifier rubyid_assign_attributes'>assign_attributes</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:post</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_permit'>permit</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_attrs'>attrs</span><span class='rparen'>)</span><span class='rparen'>)</span>
+<span class='kw'>end</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>Action-specific</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='comment'># Looks for PostPolicy#permitted_attributes_for_create
+</span><span class='id identifier rubyid_permitted_attributes'>permitted_attributes</span><span class='lparen'>(</span><span class='ivar'>@post</span><span class='comma'>,</span> <span class='symbol'>:create</span><span class='rparen'>)</span>  <span class='comment'># =&gt; [:title, :body]
+</span>
+<span class='comment'># Looks for PostPolicy#permitted_attributes_for_update
+</span><span class='id identifier rubyid_permitted_attributes'>permitted_attributes</span><span class='lparen'>(</span><span class='ivar'>@post</span><span class='comma'>,</span> <span class='symbol'>:update</span><span class='rparen'>)</span>  <span class='comment'># =&gt; [:title, :body, :published]</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>record</span>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the record being modified</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>action</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>Symbol</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the action name (defaults to current action)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;Symbol&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>array of permitted attribute names</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Controller/PolicyNotDefinedError.html" title="SimpleAuthorize::Controller::PolicyNotDefinedError (class)">PolicyNotDefinedError</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if policy doesn’t define permitted attributes</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="#policy_params-instance_method" title="SimpleAuthorize::Controller#policy_params (method)">#policy_params</a></span></li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 400</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_permitted_attributes'>permitted_attributes</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='id identifier rubyid_action'>action</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_action'>action</span> <span class='op'>||=</span> <span class='id identifier rubyid_action_name'>action_name</span>
+  <span class='id identifier rubyid_policy'>policy</span> <span class='op'>=</span> <span class='id identifier rubyid_policy'>policy</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_method_name'>method_name</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>permitted_attributes_for_</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action'>action</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+
+  <span class='kw'>if</span> <span class='id identifier rubyid_policy'>policy</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_policy'>policy</span><span class='period'>.</span><span class='id identifier rubyid_public_send'>public_send</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='rparen'>)</span>
+  <span class='kw'>elsif</span> <span class='id identifier rubyid_policy'>policy</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:permitted_attributes</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_policy'>policy</span><span class='period'>.</span><span class='id identifier rubyid_permitted_attributes'>permitted_attributes</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="Controller/PolicyNotDefinedError.html" title="SimpleAuthorize::Controller::PolicyNotDefinedError (class)">PolicyNotDefinedError</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>unable to find permitted attributes for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_record'>record</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="policy-instance_method">
+  
+    #<strong>policy</strong>(record, policy_class: nil, namespace: nil)  &#x21d2; <tt><span class='object_link'><a href="Policy.html" title="SimpleAuthorize::Policy (class)">SimpleAuthorize::Policy</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Get or instantiate a policy for a record.</p>
+
+<p>Returns the policy instance for the given record. Policies are cached per-request if <span class='object_link'><a href="Configuration.html#enable_policy_cache-instance_method" title="SimpleAuthorize::Configuration#enable_policy_cache (method)">SimpleAuthorize::Configuration#enable_policy_cache</a></span> is enabled. Available as a helper method in views.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>In controller</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='ivar'>@post</span> <span class='op'>=</span> <span class='const'>Post</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:id</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_policy'>policy</span><span class='lparen'>(</span><span class='ivar'>@post</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_update?'>update?</span>  <span class='comment'># =&gt; true or false</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>In view</p>
+</div></h5>
+      
+      <pre class="example code"><code>&lt;% if policy(@post).update? %&gt;
+  &lt;%= link_to &quot;Edit&quot;, edit_post_path(@post) %&gt;
+&lt;% end %&gt;</code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>With custom policy class</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_policy'>policy</span><span class='lparen'>(</span><span class='ivar'>@post</span><span class='comma'>,</span> <span class='label'>policy_class:</span> <span class='const'>AdminPostPolicy</span><span class='rparen'>)</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>record</span>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the record to get a policy for</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>policy_class</span>
+      
+      
+        <span class='type'>(<tt>Class</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>optional policy class to use</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>namespace</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>optional namespace for namespaced policies</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Policy.html" title="SimpleAuthorize::Policy (class)">SimpleAuthorize::Policy</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the policy instance</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Controller/PolicyNotDefinedError.html" title="SimpleAuthorize::Controller::PolicyNotDefinedError (class)">PolicyNotDefinedError</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if policy class cannot be found</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="#authorize-instance_method" title="SimpleAuthorize::Controller#authorize (method)">#authorize</a></span></li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 276</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_policy'>policy</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='label'>policy_class:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>namespace:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_policy_class'>policy_class</span> <span class='op'>||=</span> <span class='kw'>if</span> <span class='id identifier rubyid_namespace'>namespace</span>
+                     <span class='id identifier rubyid_policy_class_for'>policy_class_for</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='label'>namespace:</span> <span class='id identifier rubyid_namespace'>namespace</span><span class='rparen'>)</span>
+                   <span class='kw'>else</span>
+                     <span class='id identifier rubyid_policy_class_for'>policy_class_for</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='rparen'>)</span>
+                   <span class='kw'>end</span>
+
+  <span class='comment'># Return cached policy if caching is enabled
+</span>  <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="../SimpleAuthorize.html" title="SimpleAuthorize (module)">SimpleAuthorize</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configuration'><span class='object_link'><a href="../SimpleAuthorize.html#configuration-class_method" title="SimpleAuthorize.configuration (method)">configuration</a></span></span><span class='period'>.</span><span class='id identifier rubyid_enable_policy_cache'><span class='object_link'><a href="Configuration.html#enable_policy_cache-instance_method" title="SimpleAuthorize::Configuration#enable_policy_cache (method)">enable_policy_cache</a></span></span>
+    <span class='id identifier rubyid_policy_cache_key'>policy_cache_key</span> <span class='op'>=</span> <span class='id identifier rubyid_build_policy_cache_key'>build_policy_cache_key</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='id identifier rubyid_policy_class'>policy_class</span><span class='rparen'>)</span>
+    <span class='ivar'>@_policy_cache</span> <span class='op'>||=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+    <span class='ivar'>@_policy_cache</span><span class='lbracket'>[</span><span class='id identifier rubyid_policy_cache_key'>policy_cache_key</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='id identifier rubyid_policy_class'>policy_class</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_authorized_user'>authorized_user</span><span class='comma'>,</span> <span class='id identifier rubyid_record'>record</span><span class='rparen'>)</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_policy_class'>policy_class</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_authorized_user'>authorized_user</span><span class='comma'>,</span> <span class='id identifier rubyid_record'>record</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>rescue</span> <span class='const'>NameError</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="Controller/PolicyNotDefinedError.html" title="SimpleAuthorize::Controller::PolicyNotDefinedError (class)">PolicyNotDefinedError</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>unable to find policy `</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_policy_class'>policy_class</span><span class='embexpr_end'>}</span><span class='tstring_content'>` for `</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_record'>record</span><span class='embexpr_end'>}</span><span class='tstring_content'>`</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="policy!-instance_method">
+  
+    #<strong>policy!</strong>(record, policy_class: nil)  &#x21d2; <tt><span class='object_link'><a href="Policy.html" title="SimpleAuthorize::Policy (class)">SimpleAuthorize::Policy</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Alias for <span class='object_link'><a href="#policy-instance_method" title="SimpleAuthorize::Controller#policy (method)">#policy</a></span> - explicitly raises if policy not found.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>record</span>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the record to get a policy for</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>policy_class</span>
+      
+      
+        <span class='type'>(<tt>Class</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>optional policy class to use</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>namespace</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>optional namespace for namespaced policies</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Policy.html" title="SimpleAuthorize::Policy (class)">SimpleAuthorize::Policy</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the policy instance</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Controller/PolicyNotDefinedError.html" title="SimpleAuthorize::Controller::PolicyNotDefinedError (class)">PolicyNotDefinedError</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if policy class cannot be found</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="#policy-instance_method" title="SimpleAuthorize::Controller#policy (method)">#policy</a></span></li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+302
+303
+304</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 302</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_policy!'>policy!</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='label'>policy_class:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_policy'>policy</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='label'>policy_class:</span> <span class='id identifier rubyid_policy_class'>policy_class</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="policy_params-instance_method">
+  
+    #<strong>policy_params</strong>(record, param_key = nil)  &#x21d2; <tt>ActionController::Parameters</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Automatically build permitted params from policy.</p>
+
+<p>Convenience method that combines <code>params.require().permit()</code> with policy-defined permitted attributes. Simplifies strong parameters setup.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>Basic usage</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_create'>create</span>
+  <span class='ivar'>@post</span> <span class='op'>=</span> <span class='const'>Post</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_policy_params'>policy_params</span><span class='lparen'>(</span><span class='const'>Post</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='rparen'>)</span><span class='rparen'>)</span>
+  <span class='ivar'>@post</span><span class='period'>.</span><span class='id identifier rubyid_save'>save</span>
+<span class='kw'>end</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>With custom param key</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_create'>create</span>
+  <span class='ivar'>@post</span> <span class='op'>=</span> <span class='const'>Post</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_policy_params'>policy_params</span><span class='lparen'>(</span><span class='const'>Post</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='comma'>,</span> <span class='symbol'>:custom_post</span><span class='rparen'>)</span><span class='rparen'>)</span>
+<span class='kw'>end</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>Instead of manual permit</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='comment'># Instead of:
+</span><span class='id identifier rubyid_params'>params</span><span class='period'>.</span><span class='id identifier rubyid_require'>require</span><span class='lparen'>(</span><span class='symbol'>:post</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_permit'>permit</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_permitted_attributes'>permitted_attributes</span><span class='lparen'>(</span><span class='ivar'>@post</span><span class='rparen'>)</span><span class='rparen'>)</span>
+
+<span class='comment'># Use:
+</span><span class='id identifier rubyid_policy_params'>policy_params</span><span class='lparen'>(</span><span class='ivar'>@post</span><span class='rparen'>)</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>record</span>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the record being created/updated</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>param_key</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>Symbol</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the params key (defaults to model’s param_key)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>ActionController::Parameters</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>permitted parameters</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="#permitted_attributes-instance_method" title="SimpleAuthorize::Controller#permitted_attributes (method)">#permitted_attributes</a></span></li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+533
+534
+535
+536</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 533</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_policy_params'>policy_params</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='id identifier rubyid_param_key'>param_key</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_param_key'>param_key</span> <span class='op'>||=</span> <span class='id identifier rubyid_record'>record</span><span class='period'>.</span><span class='id identifier rubyid_model_name'>model_name</span><span class='period'>.</span><span class='id identifier rubyid_param_key'>param_key</span>
+  <span class='id identifier rubyid_params'>params</span><span class='period'>.</span><span class='id identifier rubyid_require'>require</span><span class='lparen'>(</span><span class='id identifier rubyid_param_key'>param_key</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_permit'>permit</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_permitted_attributes'>permitted_attributes</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='rparen'>)</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="policy_scope-instance_method">
+  
+    #<strong>policy_scope</strong>(scope, policy_scope_class: nil)  &#x21d2; <tt>ActiveRecord::Relation</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Filter a collection/scope based on user permissions.</p>
+
+<p>Uses the policy’s Scope class to filter an ActiveRecord relation, returning only records that the user is permitted to see. Available as a helper method in views.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>Basic usage</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_index'>index</span>
+  <span class='ivar'>@posts</span> <span class='op'>=</span> <span class='id identifier rubyid_policy_scope'>policy_scope</span><span class='lparen'>(</span><span class='const'>Post</span><span class='rparen'>)</span>  <span class='comment'># Uses PostPolicy::Scope
+</span><span class='kw'>end</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>With ActiveRecord relation</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_index'>index</span>
+  <span class='ivar'>@posts</span> <span class='op'>=</span> <span class='id identifier rubyid_policy_scope'>policy_scope</span><span class='lparen'>(</span><span class='const'>Post</span><span class='period'>.</span><span class='id identifier rubyid_published'>published</span><span class='rparen'>)</span>  <span class='comment'># Filters published posts
+</span><span class='kw'>end</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>In view</p>
+</div></h5>
+      
+      <pre class="example code"><code>&lt;% policy_scope(Post).each do |post| %&gt;
+  &lt;%= post.title %&gt;
+&lt;% end %&gt;</code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>scope</span>
+      
+      
+        <span class='type'>(<tt>ActiveRecord::Relation</tt>, <tt>Class</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the relation or model class to filter</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>policy_scope_class</span>
+      
+      
+        <span class='type'>(<tt>Class</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>optional scope class to use</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>ActiveRecord::Relation</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>filtered relation</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Controller/PolicyNotDefinedError.html" title="SimpleAuthorize::Controller::PolicyNotDefinedError (class)">PolicyNotDefinedError</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if scope class cannot be found</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="Policy/Scope.html" title="SimpleAuthorize::Policy::Scope (class)">Policy::Scope</a></span></li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 335</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_policy_scope'>policy_scope</span><span class='lparen'>(</span><span class='id identifier rubyid_scope'>scope</span><span class='comma'>,</span> <span class='label'>policy_scope_class:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='ivar'>@policy_scoping_performed</span> <span class='op'>=</span> <span class='kw'>true</span>
+
+  <span class='id identifier rubyid_policy_scope_class'>policy_scope_class</span> <span class='op'>||=</span> <span class='id identifier rubyid_policy_scope_class_for'>policy_scope_class_for</span><span class='lparen'>(</span><span class='id identifier rubyid_scope'>scope</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='kw'>nil</span>
+  <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='kw'>nil</span>
+
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='id identifier rubyid_policy_scope_class'>policy_scope_class</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_authorized_user'>authorized_user</span><span class='comma'>,</span> <span class='id identifier rubyid_scope'>scope</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_resolve'>resolve</span>
+  <span class='kw'>rescue</span> <span class='const'>NameError</span>
+    <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Controller/PolicyNotDefinedError.html" title="SimpleAuthorize::Controller::PolicyNotDefinedError (class)">PolicyNotDefinedError</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>unable to find scope `</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_policy_scope_class'>policy_scope_class</span><span class='embexpr_end'>}</span><span class='tstring_content'>` for `</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_scope'>scope</span><span class='embexpr_end'>}</span><span class='tstring_content'>`</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Emit instrumentation event
+</span>  <span class='id identifier rubyid_instrument_policy_scope'>instrument_policy_scope</span><span class='lparen'>(</span><span class='id identifier rubyid_scope'>scope</span><span class='comma'>,</span> <span class='id identifier rubyid_policy_scope_class'>policy_scope_class</span><span class='comma'>,</span> <span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_instrumentation_enabled?'>instrumentation_enabled?</span>
+
+  <span class='id identifier rubyid_raise'>raise</span> <span class='id identifier rubyid_error'>error</span> <span class='kw'>if</span> <span class='id identifier rubyid_error'>error</span>
+
+  <span class='id identifier rubyid_result'>result</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="policy_scope!-instance_method">
+  
+    #<strong>policy_scope!</strong>(scope, policy_scope_class: nil)  &#x21d2; <tt>ActiveRecord::Relation</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Alias for <span class='object_link'><a href="#policy_scope-instance_method" title="SimpleAuthorize::Controller#policy_scope (method)">#policy_scope</a></span> - explicitly raises if scope not found.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>scope</span>
+      
+      
+        <span class='type'>(<tt>ActiveRecord::Relation</tt>, <tt>Class</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the relation or model class to filter</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>policy_scope_class</span>
+      
+      
+        <span class='type'>(<tt>Class</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>optional scope class to use</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>ActiveRecord::Relation</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>filtered relation</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Controller/PolicyNotDefinedError.html" title="SimpleAuthorize::Controller::PolicyNotDefinedError (class)">PolicyNotDefinedError</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if scope class cannot be found</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="#policy_scope-instance_method" title="SimpleAuthorize::Controller#policy_scope (method)">#policy_scope</a></span></li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+363
+364
+365</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 363</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_policy_scope!'>policy_scope!</span><span class='lparen'>(</span><span class='id identifier rubyid_scope'>scope</span><span class='comma'>,</span> <span class='label'>policy_scope_class:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_policy_scope'>policy_scope</span><span class='lparen'>(</span><span class='id identifier rubyid_scope'>scope</span><span class='comma'>,</span> <span class='label'>policy_scope_class:</span> <span class='id identifier rubyid_policy_scope_class'>policy_scope_class</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="policy_scoped?-instance_method">
+  
+    #<strong>policy_scoped?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Check if policy scoping was performed</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+568
+569
+570</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 568</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_policy_scoped?'>policy_scoped?</span>
+  <span class='ivar'>@policy_scoping_performed</span> <span class='op'>==</span> <span class='kw'>true</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="reset_authorization-instance_method">
+  
+    #<strong>reset_authorization</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Reset authorization tracking (useful in tests)</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+583
+584
+585
+586
+587
+588</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 583</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_reset_authorization'>reset_authorization</span>
+  <span class='ivar'>@authorization_performed</span> <span class='op'>=</span> <span class='kw'>nil</span>
+  <span class='ivar'>@policy_scoping_performed</span> <span class='op'>=</span> <span class='kw'>nil</span>
+  <span class='ivar'>@_policy</span> <span class='op'>=</span> <span class='kw'>nil</span>
+  <span class='id identifier rubyid_clear_policy_cache'>clear_policy_cache</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="skip_authorization-instance_method">
+  
+    #<strong>skip_authorization</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Skip authorization verification for specific actions</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+553
+554
+555</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 553</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_skip_authorization'>skip_authorization</span>
+  <span class='ivar'>@authorization_performed</span> <span class='op'>=</span> <span class='kw'>true</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="skip_policy_scope-instance_method">
+  
+    #<strong>skip_policy_scope</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Skip policy scope verification for specific actions</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+558
+559
+560</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 558</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_skip_policy_scope'>skip_policy_scope</span>
+  <span class='ivar'>@policy_scoping_performed</span> <span class='op'>=</span> <span class='kw'>true</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="user_not_authorized-instance_method">
+  
+    #<strong>user_not_authorized</strong>(exception = nil)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Alias for handle_unauthorized that matches common convention</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+675
+676
+677</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 675</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_user_not_authorized'>user_not_authorized</span><span class='lparen'>(</span><span class='id identifier rubyid_exception'>exception</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_handle_unauthorized'>handle_unauthorized</span><span class='lparen'>(</span><span class='id identifier rubyid_exception'>exception</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="verify_authorized-instance_method">
+  
+    #<strong>verify_authorized</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Verify that authorization was performed</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Controller/AuthorizationNotPerformedError.html" title="SimpleAuthorize::Controller::AuthorizationNotPerformedError (class)">AuthorizationNotPerformedError</a></span></tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+539
+540
+541
+542
+543</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 539</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_verify_authorized'>verify_authorized</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_authorization_performed?'>authorization_performed?</span>
+
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="Controller/AuthorizationNotPerformedError.html" title="SimpleAuthorize::Controller::AuthorizationNotPerformedError (class)">AuthorizationNotPerformedError</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_content'>#</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action_name'>action_name</span><span class='embexpr_end'>}</span><span class='tstring_content'> is missing authorization</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="verify_policy_scoped-instance_method">
+  
+    #<strong>verify_policy_scoped</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Verify that scoping was performed for index actions</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Controller/PolicyScopingNotPerformedError.html" title="SimpleAuthorize::Controller::PolicyScopingNotPerformedError (class)">PolicyScopingNotPerformedError</a></span></tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+546
+547
+548
+549
+550</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 546</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_verify_policy_scoped'>verify_policy_scoped</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_policy_scoped?'>policy_scoped?</span>
+
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="Controller/PolicyScopingNotPerformedError.html" title="SimpleAuthorize::Controller::PolicyScopingNotPerformedError (class)">PolicyScopingNotPerformedError</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_content'>#</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action_name'>action_name</span><span class='embexpr_end'>}</span><span class='tstring_content'> is missing policy scope</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="viewer_user?-instance_method">
+  
+    #<strong>viewer_user?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+670
+671
+672</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 670</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_viewer_user?'>viewer_user?</span>
+  <span class='id identifier rubyid_current_user'>current_user</span><span class='op'>&amp;.</span><span class='id identifier rubyid_viewer?'>viewer?</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="visible_attributes-instance_method">
+  
+    #<strong>visible_attributes</strong>(record, action = nil)  &#x21d2; <tt>Array&lt;Symbol&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Get attributes that the user can view for a record.</p>
+
+<p>Returns an array of attribute names that should be visible to the user. Looks for action-specific methods first (e.g., <code>visible_attributes_for_show</code>), falling back to general <code>visible_attributes</code> method.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>Basic usage</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_show'>show</span>
+  <span class='ivar'>@post</span> <span class='op'>=</span> <span class='const'>Post</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:id</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='ivar'>@visible_attrs</span> <span class='op'>=</span> <span class='id identifier rubyid_visible_attributes'>visible_attributes</span><span class='lparen'>(</span><span class='ivar'>@post</span><span class='rparen'>)</span>
+<span class='kw'>end</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'>
+<p>In view</p>
+</div></h5>
+      
+      <pre class="example code"><code>&lt;% visible_attributes(@post).each do |attr| %&gt;
+  &lt;p&gt;&lt;strong&gt;&lt;%= attr %&gt;:&lt;/strong&gt; &lt;%= @post.send(attr) %&gt;&lt;/p&gt;
+&lt;% end %&gt;</code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>record</span>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the record being viewed</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>action</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>Symbol</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the action name (defaults to current action)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;Symbol&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>array of visible attribute names</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="#editable_attributes-instance_method" title="SimpleAuthorize::Controller#editable_attributes (method)">#editable_attributes</a></span></li>
+    
+      <li><span class='object_link'><a href="#filter_attributes-instance_method" title="SimpleAuthorize::Controller#filter_attributes (method)">#filter_attributes</a></span></li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/simple_authorize/controller.rb', line 438</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_visible_attributes'>visible_attributes</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='comma'>,</span> <span class='id identifier rubyid_action'>action</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_action'>action</span> <span class='op'>||=</span> <span class='id identifier rubyid_action_name'>action_name</span>
+  <span class='id identifier rubyid_policy'>policy</span> <span class='op'>=</span> <span class='id identifier rubyid_policy'>policy</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_method_name'>method_name</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>visible_attributes_for_</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action'>action</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+
+  <span class='kw'>if</span> <span class='id identifier rubyid_policy'>policy</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_policy'>policy</span><span class='period'>.</span><span class='id identifier rubyid_public_send'>public_send</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='rparen'>)</span>
+  <span class='kw'>elsif</span> <span class='id identifier rubyid_policy'>policy</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:visible_attributes</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_policy'>policy</span><span class='period'>.</span><span class='id identifier rubyid_visible_attributes'>visible_attributes</span>
+  <span class='kw'>else</span>
+    <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Tue Nov  4 21:47:29 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.3.6).
+</div>
+
+    </div>
+  </body>
+</html>

@@ -14,3 +14,6 @@ gem "rubocop", "~> 1.81"
 
 # Code quality and security
 gem "overcommit", "~> 0.64"
+
+# Documentation
+gem "yard", "~> 0.9"
