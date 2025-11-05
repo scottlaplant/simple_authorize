@@ -11,6 +11,8 @@ SimpleAuthorize is a lightweight, powerful authorization framework for Rails tha
 - **Policy-Based Authorization** - Define authorization rules in dedicated policy classes
 - **Scope Filtering** - Automatically filter collections based on user permissions
 - **Role-Based Access** - Built-in support for role-based authorization
+- **Policy Composition** - Mix and match reusable authorization modules
+- **Context-Aware Policies** - Make authorization decisions based on request context (IP, time, location, etc.)
 - **Zero Dependencies** - No external gems required (only Rails)
 - **Strong Parameters Integration** - Automatically build permitted params from policies
 - **Test Friendly** - Easy to test policies in isolation
@@ -391,6 +393,217 @@ SimpleAuthorize.configure do |config|
 
   # Custom method to get current user (default: current_user)
   config.current_user_method = :authenticated_user
+end
+```
+
+## Policy Composition
+
+Policy Composition allows you to build complex authorization policies by combining reusable modules. This promotes DRY code and consistent authorization patterns across your application.
+
+### Using Built-in Policy Modules
+
+SimpleAuthorize provides several ready-to-use policy modules:
+
+```ruby
+class ArticlePolicy < ApplicationPolicy
+  include SimpleAuthorize::PolicyModules::Ownable
+  include SimpleAuthorize::PolicyModules::Publishable
+
+  def show?
+    published? || owner_or_admin?
+  end
+
+  def update?
+    owner_or_admin? && not_published?
+  end
+end
+```
+
+### Available Policy Modules
+
+#### Ownable
+Provides ownership-based authorization:
+- `owner?` - Check if user owns the record
+- `owner_or_admin?` - Check if user is owner or admin
+- `can_modify?` - Common pattern for modification rights
+
+#### Publishable
+For content with draft/published states:
+- `published?` - Check if record is published
+- `can_publish?` - Check if user can publish
+- `can_preview?` - Check if user can preview drafts
+
+#### Timestamped
+Time-based authorization:
+- `expired?` - Check if record has expired
+- `within_time_window?` - Check if record is in valid time range
+- `locked?` - Check if record is time-locked
+
+#### Approvable
+For approval workflows:
+- `approved?` - Check if record is approved
+- `can_approve?` - Check if user can approve (not their own content)
+- `can_submit_for_approval?` - Check if user can submit for approval
+
+#### SoftDeletable
+For soft deletion support:
+- `soft_deleted?` - Check if record is soft deleted
+- `can_restore?` - Check if user can restore
+- `can_permanently_destroy?` - Check if user can hard delete
+
+### Creating Custom Policy Modules
+
+```ruby
+module MyApp::PolicyModules::Subscribable
+  protected
+
+  def subscriber?
+    user&.subscriptions&.active&.any?
+  end
+
+  def premium_subscriber?
+    user&.subscription&.premium?
+  end
+
+  def can_access_premium_content?
+    premium_subscriber? || admin?
+  end
+end
+
+class PremiumContentPolicy < ApplicationPolicy
+  include MyApp::PolicyModules::Subscribable
+
+  def show?
+    can_access_premium_content?
+  end
+end
+```
+
+## Context-Aware Policies
+
+Context-Aware Policies allow you to make authorization decisions based on additional context beyond just the user and record. This is useful for IP-based restrictions, time-based access, rate limiting, and more.
+
+### Basic Usage
+
+Override the `authorization_context` method in your controller:
+
+```ruby
+class ApplicationController < ActionController::Base
+  include SimpleAuthorize::Controller
+
+  private
+
+  def authorization_context
+    {
+      ip_address: request.remote_ip,
+      user_agent: request.user_agent,
+      current_time: Time.current,
+      country: request.location&.country,
+      two_factor_verified: session[:two_factor_verified],
+      user_plan: current_user&.subscription&.plan
+    }
+  end
+end
+```
+
+### Using Context in Policies
+
+Access context in your policies through the `context` method:
+
+```ruby
+class SecureDocumentPolicy < ApplicationPolicy
+  def show?
+    # Require 2FA for sensitive documents
+    return false unless context[:two_factor_verified]
+
+    # Check IP restrictions
+    return false unless trusted_ip?
+
+    owner_or_admin?
+  end
+
+  private
+
+  def trusted_ip?
+    return true if context[:ip_address].nil?
+
+    trusted_ips = ["192.168.1.0/24", "10.0.0.0/8"]
+    trusted_ips.any? { |range| IPAddr.new(range).include?(context[:ip_address]) }
+  end
+end
+```
+
+### Common Context Patterns
+
+#### Geographic Restrictions
+```ruby
+class RegionalContentPolicy < ApplicationPolicy
+  def show?
+    allowed_countries = ["US", "CA", "UK"]
+    allowed_countries.include?(context[:country]) || admin?
+  end
+end
+```
+
+#### Time-Based Access
+```ruby
+class BusinessHoursPolicy < ApplicationPolicy
+  def create?
+    return true if admin?
+
+    hour = context[:current_time].hour
+    hour >= 9 && hour < 17  # 9 AM to 5 PM only
+  end
+end
+```
+
+#### Rate Limiting
+```ruby
+class ApiPolicy < ApplicationPolicy
+  def create?
+    return true if admin?
+
+    request_count = context[:request_count] || 0
+    request_count < 100  # Limit to 100 requests
+  end
+end
+```
+
+#### Plan-Based Features
+```ruby
+class ExportPolicy < ApplicationPolicy
+  def export?
+    case context[:user_plan]
+    when "enterprise"
+      true
+    when "pro"
+      owner_or_admin?
+    when "basic"
+      admin?
+    else
+      false
+    end
+  end
+end
+```
+
+### Context with Policy Scopes
+
+Context is also available in policy scopes:
+
+```ruby
+class DocumentPolicy < ApplicationPolicy
+  class Scope < ApplicationPolicy::Scope
+    def resolve
+      if context[:department]
+        scope.where(department: context[:department])
+      elsif user.admin?
+        scope.all
+      else
+        scope.where(user: user)
+      end
+    end
+  end
 end
 ```
 

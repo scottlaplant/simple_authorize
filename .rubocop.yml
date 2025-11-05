@@ -15,11 +15,6 @@ Metrics/ClassLength:
     - 'test/**/*'
     - 'spec/**/*'
 
-Metrics/MethodLength:
-  Exclude:
-    - 'test/**/*'
-    - 'spec/**/*'
-    - 'lib/simple_authorize/controller.rb'
 
 Metrics/BlockLength:
   Exclude:
@@ -33,22 +28,43 @@ Metrics/ModuleLength:
     - 'lib/simple_authorize/controller.rb'
 
 # The policy_class_for method is complex but necessary for flexible policy resolution
+# Policy modules have complex conditional logic for various authorization patterns
 Metrics/AbcSize:
   Exclude:
     - 'lib/simple_authorize/controller.rb'
+    - 'lib/simple_authorize/policy_modules/*.rb'
+    - 'test/**/*'
 
 Metrics/CyclomaticComplexity:
   Exclude:
     - 'lib/simple_authorize/controller.rb'
+    - 'lib/simple_authorize/policy_modules/*.rb'
+    - 'test/**/*'
 
 Metrics/PerceivedComplexity:
   Exclude:
+    - 'lib/simple_authorize/controller.rb'
+    - 'lib/simple_authorize/policy_modules/*.rb'
+    - 'test/**/*'
+
+# Policy module methods need to check multiple conditions
+Metrics/MethodLength:
+  Max: 15
+  Exclude:
+    - 'test/**/*'
+    - 'spec/**/*'
     - 'lib/simple_authorize/controller.rb'
 
 # OpenStruct is fine for test mocks
 Style/OpenStructUse:
   Exclude:
     - 'test/**/*'
+
+# Test classes define policy classes for testing purposes
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - 'test/**/*'
+    - 'spec/**/*'
 
 # Development dependencies are fine in gemspec
 Gemspec/DevelopmentDependencies:

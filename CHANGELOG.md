@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2025-11-05
+
+### Fixed
+- RuboCop compliance for all new policy modules
+- Method naming convention (`standard_permissions` instead of `standard_permissions?`)
+- Simplified conditional logic in Approvable module
+- Code style improvements across test files
+
+## [1.1.0] - 2025-11-05
+
+### Added
+
+#### Policy Composition
+- **Reusable Policy Modules** - Built-in modules for common authorization patterns
+- **Ownable Module** - Ownership-based authorization helpers
+- **Publishable Module** - Publishing workflow authorization
+- **Timestamped Module** - Time-based access control
+- **Approvable Module** - Approval workflow helpers
+- **SoftDeletable Module** - Soft deletion authorization
+- **Custom Module Support** - Easy creation of custom authorization modules
+
+#### Context-Aware Policies
+- **Request Context** - Pass additional context to policies (IP, time, location, etc.)
+- **Controller Integration** - `authorization_context` method for building context
+- **Context in Scopes** - Context available in Policy::Scope classes
+- **Common Patterns** - Built-in support for geographic restrictions, time-based access, rate limiting
+
 ## [1.0.0] - 2025-11-03
 
 ### Added

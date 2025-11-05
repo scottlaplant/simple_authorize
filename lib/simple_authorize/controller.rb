@@ -141,9 +141,9 @@ module SimpleAuthorize
       if SimpleAuthorize.configuration.enable_policy_cache
         policy_cache_key = build_policy_cache_key(record, policy_class)
         @_policy_cache ||= {}
-        @_policy_cache[policy_cache_key] ||= policy_class.new(authorized_user, record)
+        @_policy_cache[policy_cache_key] ||= policy_class.new(authorized_user, record, context: authorization_context)
       else
-        policy_class.new(authorized_user, record)
+        policy_class.new(authorized_user, record, context: authorization_context)
       end
     rescue NameError
       raise PolicyNotDefinedError, "unable to find policy `#{policy_class}` for `#{record}`"
@@ -163,7 +163,7 @@ module SimpleAuthorize
       error = nil
 
       begin
-        result = policy_scope_class.new(authorized_user, scope).resolve
+        result = policy_scope_class.new(authorized_user, scope, context: authorization_context).resolve
       rescue NameError
         error = PolicyNotDefinedError.new("unable to find scope `#{policy_scope_class}` for `#{scope}`")
       end
@@ -275,6 +275,26 @@ module SimpleAuthorize
     # Get the user for authorization (can be overridden)
     def authorized_user
       current_user
+    end
+
+    # Build context for authorization (can be overridden)
+    # Override this method in your ApplicationController to provide
+    # context data for policies
+    #
+    # Example:
+    #   def authorization_context
+    #     {
+    #       ip_address: request.remote_ip,
+    #       user_agent: request.user_agent,
+    #       subdomain: request.subdomain,
+    #       current_time: Time.current,
+    #       request_count: rate_limiter.count_for(current_user),
+    #       two_factor_verified: session[:two_factor_verified],
+    #       user_plan: current_user&.subscription&.plan
+    #     }
+    #   end
+    def authorization_context
+      {}
     end
 
     # Clear the policy cache

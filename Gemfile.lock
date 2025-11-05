@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    simple_authorize (1.0.1)
+    simple_authorize (1.1.1)
       activesupport (>= 6.0)
       i18n (>= 1.0)
       railties (>= 6.0)

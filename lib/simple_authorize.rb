@@ -5,6 +5,7 @@ require_relative "simple_authorize/version"
 require_relative "simple_authorize/configuration"
 require_relative "simple_authorize/controller"
 require_relative "simple_authorize/policy"
+require_relative "simple_authorize/policy_modules"
 require_relative "simple_authorize/test_helpers"
 
 # SimpleAuthorize provides a lightweight authorization framework for Rails applications

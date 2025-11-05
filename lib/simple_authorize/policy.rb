@@ -5,9 +5,10 @@ module SimpleAuthorize
   class Policy
     attr_reader :user, :record
 
-    def initialize(user, record)
+    def initialize(user, record, context: nil)
       @user = user
       @record = record
+      @context = context
     end
 
     # Default policies - deny everything by default
@@ -64,6 +65,10 @@ module SimpleAuthorize
     # Helper methods
     protected
 
+    def context
+      @context || {}
+    end
+
     def admin?
       user&.admin?
     end
@@ -96,9 +101,10 @@ module SimpleAuthorize
     class Scope
       attr_reader :user, :scope
 
-      def initialize(user, scope)
+      def initialize(user, scope, context: nil)
         @user = user
         @scope = scope
+        @context = context
       end
 
       def resolve
@@ -106,6 +112,10 @@ module SimpleAuthorize
       end
 
       protected
+
+      def context
+        @context || {}
+      end
 
       def admin?
         user&.admin?
